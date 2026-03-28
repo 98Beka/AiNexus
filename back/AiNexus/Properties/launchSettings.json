@@ -38,10 +38,9 @@
       "publishAllPorts": false,
       "useSSL": false,
       "httpPort": 8080,
-      "sslPort": 8081,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "http://+:8080;https://+:8081"
+        "ASPNETCORE_URLS": "http://+:8080"
       }
     }
   },

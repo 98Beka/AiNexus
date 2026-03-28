@@ -104,16 +104,6 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedUICultures = supportedCultures;
 });
 
-builder.Services.Configure<FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit = 300L * 1024 * 1024; // 100 MB
-});
-
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.Limits.MaxRequestBodySize = 300L * 1024 * 1024; // 100 MB
-});
-
 builder.Services.AddCors();
 
 builder.WebHost.ConfigureKestrel(options => {
