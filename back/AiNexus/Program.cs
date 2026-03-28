@@ -52,7 +52,7 @@ builder.Services.AddScoped<IRoleMapper, DefaultRoleMapper>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IJwtUtils, DefaultJwtUtils>();
 builder.Services.AddScoped<IAccountService, DefaultAccountService>();
-builder.Services.AddScoped<IFlowiseService, FlowiseService>();
+builder.Services.AddHttpClient<IFlowiseService, FlowiseService>();
 
 builder.Services.AddSwaggerGen(option =>
 {
