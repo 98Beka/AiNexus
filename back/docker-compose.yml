@@ -1,0 +1,6 @@
+services:
+  ainexus:
+    image: ${DOCKER_REGISTRY-}ainexus
+    build:
+      context: .
+      dockerfile: AiNexus/Dockerfile
