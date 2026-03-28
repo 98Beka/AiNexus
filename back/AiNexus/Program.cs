@@ -1,4 +1,5 @@
 
+using AiNexus.Infrastructure.Flowise;
 using Library.Helpers.Constants;
 using Library.Helpers.Constants.Accounts;
 using Library.Helpers.DbContexts;
@@ -51,6 +52,7 @@ builder.Services.AddScoped<IRoleMapper, DefaultRoleMapper>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IJwtUtils, DefaultJwtUtils>();
 builder.Services.AddScoped<IAccountService, DefaultAccountService>();
+builder.Services.AddScoped<IFlowiseService, FlowiseService>();
 
 builder.Services.AddSwaggerGen(option =>
 {
