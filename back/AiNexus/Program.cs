@@ -116,6 +116,10 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder.Services.AddCors();
 
+builder.WebHost.ConfigureKestrel(options => {
+    options.ListenAnyIP(8080); // HTTP only
+});
+
 var app = builder.Build();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
