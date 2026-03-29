@@ -6,7 +6,7 @@ export default function Layout() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
-      <Container maxWidth="lg" sx={{ py: 4, flex: 1 }}>
+      <Container maxWidth="sm" sx={{ py: 4, flex: 1 }}>
         <Outlet />
       </Container>
     </Box>
