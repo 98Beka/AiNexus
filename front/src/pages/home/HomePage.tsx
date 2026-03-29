@@ -1,8 +1,5 @@
 // src/pages/HomePage.tsx
-import { Alert, Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material'
-import { useGetMyAccountQuery } from '../../entities/auth/authApi'
-import { useGetApplicantsQuery, type ApplicantDto } from '../../entities/applicant/applicantApi'
-import { Link } from 'react-router-dom'
+import {Box} from '@mui/material'
 
 export default function HomePage() {
 /*  const { data: myAccount, isLoading: accountLoading, isFetching: accountFetching, error: accountError } = useGetMyAccountQuery(undefined, {

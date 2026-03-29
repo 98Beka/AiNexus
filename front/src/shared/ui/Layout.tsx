@@ -9,7 +9,7 @@ export default function Layout() {
       <Sidebar/>
       <div style={{ width: '100%', display: 'flex-col' }}>
           <Header />
-          <Container maxWidth="sm" sx={{ py: 4, flex: 1 }}>
+          <Container sx={{ py: 4, flex: 1 }}>
               <Outlet />
           </Container>
       </div>
