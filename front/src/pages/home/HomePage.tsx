@@ -1,22 +1,16 @@
+// src/pages/HomePage.tsx
 import { useEffect } from 'react'
-import { Navigate } from 'react-router-dom'
 import { Alert, Box, CircularProgress, Typography } from '@mui/material'
-import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { useAppDispatch } from '../../app/hooks'
 import { useGetMyAccountQuery } from '../../entities/auth/authApi'
 import { setMyAccount } from '../../entities/auth/authSlice'
 
 export default function HomePage() {
   const dispatch = useAppDispatch()
-  const authState = useAppSelector(
-    (state) =>
-      state.auth as {
-        status: 'idle' | 'authenticated' | 'unauthenticated'
-      },
-  )
+
   const { data: myAccount, isLoading: accountLoading, isFetching: accountFetching, error: accountError } = useGetMyAccountQuery(
     undefined,
     {
-      skip: authState.status !== 'authenticated',
       refetchOnFocus: true,
     },
   )
@@ -27,9 +21,6 @@ export default function HomePage() {
     }
   }, [myAccount, dispatch])
 
-  if (authState.status !== 'authenticated') {
-    return <Navigate to="/auth" replace />
-  }
 
   return (
     <Box sx={{ display: 'grid', gap: 2 }}>
