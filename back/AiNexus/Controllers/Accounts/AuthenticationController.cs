@@ -142,6 +142,7 @@ namespace Library.Controllers.Accounts
             return response;
         }
 
+        [Authorize]
         [HttpGet("get-my-account")]
         public async Task<MyAccountInfo> GetMyAccount()
         {

@@ -1,6 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import { createBaseQuery } from '../shared/api/baseApi'
 
 export type ApplicantDto = {
   id: string
@@ -32,12 +31,12 @@ export type TestResultRequest = {
 
 export const applicantApi = createApi({
   reducerPath: 'applicantApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/api/v1/applicants/`,
+  baseQuery: createBaseQuery({
+    baseUrl: `${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000'}/api/v1/applicants`,
   }),
   endpoints: (builder) => ({
     createApplicant: builder.mutation<ApplicantDto, CreateApplicantRequest>({
-      query: (body) => ({
+      query: (body: CreateApplicantRequest) => ({
         url: 'submit',
         method: 'POST',
         body,
@@ -50,19 +49,19 @@ export const applicantApi = createApi({
       }),
     }),
     getApplicant: builder.query<ApplicantDto, string>({
-      query: (id) => ({
+      query: (id: string) => ({
         url: id,
         method: 'GET',
       }),
     }),
     getApplicantByToken: builder.query<ApplicantDto, string>({
-      query: (token) => ({
+      query: (token: string) => ({
         url: `token/${token}`,
         method: 'GET',
       }),
     }),
     updateApplicantTest: builder.mutation<ApplicantDto, { id: string; body: TestResultRequest }>({
-      query: ({ id, body }) => ({
+      query: ({ id, body }: { id: string; body: TestResultRequest }) => ({
         url: `${id}/test-result`,
         method: 'PUT',
         body,

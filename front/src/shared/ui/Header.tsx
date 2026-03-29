@@ -15,7 +15,7 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      await logoutReq().unwrap()
+      await logoutReq(undefined).unwrap()
     } finally {
       dispatch(logout())
       navigate('/auth')

@@ -1,7 +1,7 @@
 // src/pages/HomePage.tsx
 import { Alert, Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material'
 import { useGetMyAccountQuery } from '../../entities/auth/authApi'
-import { useGetApplicantsQuery } from '../../entities/applicant/applicantApi'
+import { useGetApplicantsQuery, type ApplicantDto } from '../../entities/applicant/applicantApi'
 import { Link } from 'react-router-dom'
 
 export default function HomePage() {
@@ -58,7 +58,7 @@ export default function HomePage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {applicants?.map((applicant) => (
+              {applicants?.map((applicant: ApplicantDto) => (
                 <TableRow key={applicant.id}>
                   <TableCell>{`${applicant.surname} ${applicant.name}`}</TableCell>
                   <TableCell>{applicant.email}</TableCell>
