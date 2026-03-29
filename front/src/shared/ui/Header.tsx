@@ -1,14 +1,16 @@
-import { AppBar, Toolbar, Typography, Button, Box, CircularProgress } from '@mui/material'
+import { AppBar, Toolbar, Typography, Button, Box, CircularProgress, Skeleton } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { useLogoutMutation } from '../../entities/auth/authApi'
+import { useGetMyAccountQuery, useLogoutMutation } from '../../entities/auth/authApi'
 import { logout } from '../../entities/auth/authSlice'
 
 export default function Header() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { user, status } = useAppSelector((state) => state.auth)
-
+  const { status } = useAppSelector((state) => state.auth)
+  const { data: myAccount, isLoading: isAccountLoading } = useGetMyAccountQuery(undefined, {
+    skip: status !== 'authenticated',
+  })
   const [logoutReq, { isLoading }] = useLogoutMutation()
 
   const handleLogout = async () => {
@@ -20,7 +22,7 @@ export default function Header() {
     }
   }
 
-  if (status !== 'authenticated' || !user) {
+  if (status !== 'authenticated') {
     return (
 <AppBar
   position="static"
@@ -85,7 +87,11 @@ export default function Header() {
           fontWeight: 500,
         }}
       >
-        {user.name}
+        {isAccountLoading ? (
+          <Skeleton variant="text" width={80} sx={{ bgcolor: 'grey.700' }} />
+        ) : (
+          myAccount?.name // Используем myAccount и опциональную цепочку
+        )}
       </Box>
 
       <Button

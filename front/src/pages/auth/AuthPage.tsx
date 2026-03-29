@@ -2,12 +2,10 @@ import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Alert, Box, Button, CircularProgress, Container, TextField, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { useAppSelector } from '../../app/hooks'
 import { useLoginMutation } from '../../entities/auth/authApi'
-import { setCredentials } from '../../entities/auth/authSlice'
 
 export default function AuthPage() {
-  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const authState = useAppSelector(
     (state) =>
@@ -28,9 +26,8 @@ export default function AuthPage() {
   const submitLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     try {
-      const response = await login({ email, password }).unwrap()
-      dispatch(setCredentials(response))
-      setEmail('')
+      await login({ email, password }).unwrap()
+      navigate('/')
     } catch (e) {
       // Error handled by mutation
     }

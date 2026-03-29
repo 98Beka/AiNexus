@@ -1,12 +1,8 @@
 // src/pages/HomePage.tsx
-import { useEffect } from 'react'
 import { Alert, Box, CircularProgress, Typography } from '@mui/material'
-import { useAppDispatch } from '../../app/hooks'
 import { useGetMyAccountQuery } from '../../entities/auth/authApi'
-import { setMyAccount } from '../../entities/auth/authSlice'
 
 export default function HomePage() {
-  const dispatch = useAppDispatch()
 
   const { data: myAccount, isLoading: accountLoading, isFetching: accountFetching, error: accountError } = useGetMyAccountQuery(
     undefined,
@@ -14,12 +10,6 @@ export default function HomePage() {
       refetchOnFocus: true,
     },
   )
-
-  useEffect(() => {
-    if (myAccount) {
-      dispatch(setMyAccount(myAccount))
-    }
-  }, [myAccount, dispatch])
 
 
   return (
