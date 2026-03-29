@@ -117,28 +117,30 @@ export default function ApplicantSubmitPage() {
 
               <Box component="form" onSubmit={handleSubmit}>
                 <Stack spacing={2}>
-                  <TextField
-                    label="Имя"
-                    value={form.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
-                    required
-                    fullWidth
-                  />
+                  <Stack direction={{ xs: 'column', md: 'row' }} spacing={1}>
+                    <TextField
+                      label="Имя"
+                      value={form.name}
+                      onChange={(e) => handleChange('name', e.target.value)}
+                      required
+                      fullWidth
+                    />
 
-                  <TextField
-                    label="Фамилия"
-                    value={form.surname}
-                    onChange={(e) => handleChange('surname', e.target.value)}
-                    required
-                    fullWidth
-                  />
+                    <TextField
+                      label="Фамилия"
+                      value={form.surname}
+                      onChange={(e) => handleChange('surname', e.target.value)}
+                      required
+                      fullWidth
+                    />
 
-                  <TextField
-                    label="Отчество"
-                    value={form.patronymic}
-                    onChange={(e) => handleChange('patronymic', e.target.value)}
-                    fullWidth
-                  />
+                    <TextField
+                      label="Отчество"
+                      value={form.patronymic}
+                      onChange={(e) => handleChange('patronymic', e.target.value)}
+                      fullWidth
+                    />
+                  </Stack>
 
                   <TextField
                     label="Email"
