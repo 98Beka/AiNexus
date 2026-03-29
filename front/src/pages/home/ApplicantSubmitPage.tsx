@@ -94,7 +94,7 @@ export default function ApplicantSubmitPage() {
               color="grey.400"
               sx={{ mt: 3, maxWidth: 420 }}
             >
-              Заполни заявку — мы отправим тестовое задание на email.
+              Заполни заявку — мы отправим ссылку для собеседования на email.
             </Typography>
           </Box>
 
