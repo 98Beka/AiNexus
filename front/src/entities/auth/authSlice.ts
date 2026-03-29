@@ -29,7 +29,7 @@ const authSlice = createSlice({
         surname: action.payload.surname,
         name: action.payload.name,
         patronymic: action.payload.patronymic,
-        pin: action.payload.pin,
+        email: action.payload.email,
         role: action.payload.role,
       }
       state.status = 'authenticated'
@@ -57,7 +57,7 @@ const authSlice = createSlice({
         surname: action.payload.surname,
         name: action.payload.name,
         patronymic: action.payload.patronymic,
-        pin: action.payload.pin,
+        email: action.payload.email,
         role: action.payload.role,
       }
       state.status = 'authenticated'

@@ -13,13 +13,13 @@ public class AutoMapperProfile : Profile
         CreateMap<AccountSettings, AccountSettingsDto>();
 
         CreateMap<Account, AuthenticateResponse>()
-            .ForMember(dest => dest.Pin, opt => opt.MapFrom(src => src.Email));
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
 
         CreateMap<Account, AccountDto>()
-            .ForMember(dest => dest.Pin, opt => opt.MapFrom(src => src.Email));
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
 
         CreateMap<Account, MyAccountInfo>()
-            .ForMember(dest => dest.Pin, opt => opt.MapFrom(src => src.Email));
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
 
 
         CreateMap<UpdateAccountRequest, Account>().ReverseMap();

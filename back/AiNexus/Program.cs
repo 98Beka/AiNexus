@@ -60,7 +60,7 @@ builder.Services.AddSwaggerGen(option =>
     {
         Title = "AiNexus  API",
         Version = "v1",
-        Description = "Тестовый админ:\n```json\n{\n  \"pin\": \"00000000000000\",\n  \"password\": \"_Aa123456\"\n}\n```"
+        Description = "РџСЂРёРјРµСЂ Р·Р°РїСЂРѕСЃР°:\n```json\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"_Aa123456\"\n}\n```"
     });
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {

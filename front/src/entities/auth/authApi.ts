@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000'
 
-export type LoginRequest = { pin: string; password: string }
+export type LoginRequest = { email: string; password: string }
 export type AuthenticateResponse = {
   id: string
   accessToken: string
@@ -10,7 +10,7 @@ export type AuthenticateResponse = {
   surname: string
   name: string
   patronymic?: string
-  pin: string
+  email: string
   role: string
 }
 
@@ -19,7 +19,7 @@ export type MyAccountInfo = {
   surname: string
   name: string
   patronymic?: string
-  pin: string
+  email: string
   role: string
 }
 
@@ -40,7 +40,7 @@ export const authApi = createApi({
       query: (credentials) => ({
         url: 'login',
         method: 'POST',
-        body: { pin: credentials.pin, password: credentials.password },
+        body: { email: credentials.email, password: credentials.password },
       }),
     }),
     logout: builder.mutation<{ message: string }, void>({

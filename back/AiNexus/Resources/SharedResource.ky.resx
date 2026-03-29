@@ -129,8 +129,8 @@
   <data name="AccountByIdNotFound" xml:space="preserve">
     <value>ID = {0} каттоо эсеби табылган жок.</value>
   </data>
-  <data name="AccountByPinNotFound" xml:space="preserve">
-    <value>PIN={0} боюнча эсеп табылган жок.</value>
+  <data name="AccountByEmailNotFound" xml:space="preserve">
+    <value>Email={0} боюнча эсеп табылган жок.</value>
   </data>
   <data name="AccountDisabled" xml:space="preserve">
     <value>Аккаунт өчүрүлгөн.</value>
@@ -141,8 +141,8 @@
   <data name="AccountSettingsNotFound" xml:space="preserve">
     <value>Каттоо эсебинин жөндөөлөрү табылган жок.</value>
   </data>
-  <data name="AccountWithPinAlreadyExists" xml:space="preserve">
-    <value>PIN={0} коддуу колдонуучу мурунтан эле бар.</value>
+  <data name="AccountWithEmailAlreadyExists" xml:space="preserve">
+    <value>Email={0} коддуу колдонуучу мурунтан эле бар.</value>
   </data>
   <data name="ExceededNumberFailedLoginAttempts" xml:space="preserve">
     <value>Сиз кирүү аракетинин ишке ашпай калган санынан ашып кеттиңиз. Каттоо эсеби {0} мүнөткө бөгөттөлдү.</value>
@@ -150,8 +150,8 @@
   <data name="IncorrectPassword" xml:space="preserve">
     <value>Сырсөз туура эмес.</value>
   </data>
-  <data name="IncorrectPin" xml:space="preserve">
-    <value>Pin туура эмес.</value>
+  <data name="IncorrectEmail" xml:space="preserve">
+    <value>Email туура эмес.</value>
   </data>
   <data name="InvalidReferenceId" xml:space="preserve">
     <value>Каталог идентификатору({0}) негизги каталог идентификаторуна({1}) окшош болбошу керек.</value>

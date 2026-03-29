@@ -6,7 +6,7 @@
         public string Surname { get; set; }
         public string Name { get; set; }
         public string? Patronymic { get; set; }
-        public string Pin { get; set; }
+        public string Email { get; set; }
         public RoleDto Role { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

@@ -26,12 +26,12 @@ export default function App() {
       name: string
       surname: string
       patronymic?: string
-      pin: string
+      email: string
       role: string
     } | null
     status: 'idle' | 'authenticated' | 'unauthenticated'
   })
-  const [pin, setPin] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [login, { isLoading: loginLoading, error: loginError }] = useLoginMutation()
   const [logout, { isLoading: logoutLoading }] = useLogoutMutation()
@@ -49,12 +49,11 @@ export default function App() {
   const submitLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     try {
-      const response = await login({ pin, password }).unwrap()
+      const response = await login({ email, password }).unwrap()
       dispatch(setCredentials(response))
-      setPin('')
-      setPassword('')
+      setEmail('')
     } catch (e) {
-      // handled by RTK Query hook error
+      // можно логировать или показывать сообщение
     }
   }
 
@@ -86,12 +85,12 @@ export default function App() {
           <Box component="form" onSubmit={submitLogin} sx={{ display: 'grid', gap: 2 }}>
             <Typography variant="h5">Login</Typography>
             <TextField
-              label="PIN (14 цифр)"
-              value={pin}
-              onChange={(evt) => setPin(evt.target.value)}
+              label="Email"
+              value={email}
+              onChange={(evt) => setEmail(evt.target.value)}
               required
-              inputProps={{ maxLength: 14 }}
-              helperText="Введите PIN из 14 цифр"
+              type="email"
+              helperText="Введите ваш email"
             />
             <TextField
               label="Password"
@@ -103,7 +102,7 @@ export default function App() {
             <Button type="submit" variant="contained" disabled={loginLoading}>
               {loginLoading ? <CircularProgress size={20} /> : 'Login'}
             </Button>
-            {loginError ? <Alert severity="error">Не удалось выполнить вход. Проверьте PIN и пароль.</Alert> : null}
+            {loginError ? <Alert severity="error">Не удалось выполнить вход. Проверьте email и пароль.</Alert> : null}
           </Box>
         ) : (
           <Box sx={{ display: 'grid', gap: 2 }}>
@@ -117,7 +116,7 @@ export default function App() {
                 <Typography>Имя: {myAccount?.name}</Typography>
                 <Typography>Фамилия: {myAccount?.surname}</Typography>
                 <Typography>Роль: {myAccount?.role}</Typography>
-                <Typography>PIN: {myAccount?.pin}</Typography>
+                <Typography>Email: {myAccount?.email}</Typography>
               </Box>
             )}
           </Box>

@@ -54,12 +54,12 @@ public class DefaultAccountService : BaseService, IAccountService
             .Include(a => a.RefreshTokens)
             .Include(a => a.Settings)
             .Include(a => a.Sessions)
-            .FirstOrDefaultAsync(u => u.Email == request.Pin);
+            .FirstOrDefaultAsync(u => u.Email == request.Email);
 
         // validate
         if (account is null)
         {
-            throw new BadRequestException("IncorrectPin");
+            throw new BadRequestException("IncorrectEmail");
         }
 
         if (!account.IsEnabled)
@@ -259,9 +259,9 @@ public class DefaultAccountService : BaseService, IAccountService
         var filteredAccounts = _userManager.Users
             .Where(u => u.Id != getCurrentAccountId());
 
-        if (!string.IsNullOrEmpty(filterParameters.Pin))
+        if (!string.IsNullOrEmpty(filterParameters.Email))
         {
-            filteredAccounts = filteredAccounts.Where(a => a.UserName == filterParameters.Pin);
+            filteredAccounts = filteredAccounts.Where(a => a.UserName == filterParameters.Email);
         }
 
         if (!string.IsNullOrEmpty(filterParameters.Surname))
@@ -310,9 +310,9 @@ public class DefaultAccountService : BaseService, IAccountService
 
     public async Task<AccountDto> CreateAsync(RegisterRequest request)
     {
-        if (await _userManager.FindByEmailAsync(request.Pin) != null)
+        if (await _userManager.FindByEmailAsync(request.Email) != null)
         {
-            throw new BadRequestException($"AccountWithPinAlreadyExists|{request.Pin}");
+            throw new BadRequestException($"AccountWithEmailAlreadyExists|{request.Email}");
         }
 
         var role = await _roleManager.FindByIdAsync(request.RoleId)
@@ -321,8 +321,8 @@ public class DefaultAccountService : BaseService, IAccountService
 
         Account account = new Account
         {
-            Email = request.Pin,
-            UserName = request.Pin,
+            Email = request.Email,
+            UserName = request.Email,
             Surname = request.Surname,
             Name = request.Name,
             Patronymic = request.Patronymic,
@@ -331,7 +331,7 @@ public class DefaultAccountService : BaseService, IAccountService
         var result = await _userManager.CreateAsync(account, request.Password);
         if (!result.Succeeded)
         {
-            throw new AppException($"failed to create account by pin = {request.Pin}\n" +
+            throw new AppException($"failed to create account by email = {request.Email}\n" +
                                    result.Errors.Select(error => $"Code = {error.Code}\tDescription = {error.Description}")
                                        .Aggregate((current, next) => $"{current}\n{next}"));
         }
@@ -400,11 +400,11 @@ public class DefaultAccountService : BaseService, IAccountService
     public async Task<string> ChangePassword(ChangePasswordRequest request)
     {
         var user = await _userManager.Users
-            .FirstOrDefaultAsync(u => u.Email == request.Pin);
+            .FirstOrDefaultAsync(u => u.Email == request.Email);
 
         if (user is null)
         {
-            throw new NotFoundException($"AccountByPinNotFound|{request.Pin}");
+            throw new NotFoundException($"AccountByEmailNotFound|{request.Email}");
         }
 
         if (!user.IsEnabled)
@@ -496,10 +496,10 @@ public class DefaultAccountService : BaseService, IAccountService
                         .Any(ur => ur.UserId == u.Id && _context.Roles
                             .Any(r => r.Id == ur.RoleId && r.Name == readerRole.Name)));
 
-        if (!string.IsNullOrEmpty(filterParameters.Pin))
+        if (!string.IsNullOrEmpty(filterParameters.Email))
         {
             filteredAccounts = filteredAccounts
-                .Where(a => a.UserName == filterParameters.Pin);
+                .Where(a => a.UserName == filterParameters.Email);
         }
 
         if (!string.IsNullOrEmpty(filterParameters.Surname))

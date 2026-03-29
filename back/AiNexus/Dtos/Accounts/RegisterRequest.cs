@@ -13,9 +13,8 @@ namespace Library.Dtos.Accounts
         public string? Patronymic { get; set; }
 
         [Required]
-        [StringLength(14, MinimumLength = 14, ErrorMessage = "Pin должен содержать ровно 14 символов.")]
-        [RegularExpression("^[0-9]*$", ErrorMessage = "Pin должен состоять только из цифр.")]
-        public string Pin { get; set; }
+        [EmailAddress(ErrorMessage = "Email должен быть корректным.")]
+        public string Email { get; set; }
 
         [Required]
         public string RoleId { get; set; }

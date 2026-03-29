@@ -129,8 +129,8 @@
   <data name="AccountByIdNotFound" xml:space="preserve">
     <value>Учетная запись по ID = {0} не найдена.</value>
   </data>
-  <data name="AccountByPinNotFound" xml:space="preserve">
-    <value>Аккаунт по пину {0}  не найден.</value>
+  <data name="AccountByEmailNotFound" xml:space="preserve">
+    <value>Аккаунт по email {0} не найден.</value>
   </data>
   <data name="AccountDisabled" xml:space="preserve">
     <value>Аккаунт отключен.</value>
@@ -141,8 +141,8 @@
   <data name="AccountSettingsNotFound" xml:space="preserve">
     <value>Настройки учетной записи не найдены.</value>
   </data>
-  <data name="AccountWithPinAlreadyExists" xml:space="preserve">
-    <value>Пользователь с пином = {0} уже существует.</value>
+  <data name="AccountWithEmailAlreadyExists" xml:space="preserve">
+    <value>Пользователь с email = {0} уже существует.</value>
   </data>
   <data name="ExceededNumberFailedLoginAttempts" xml:space="preserve">
     <value>Вы превысили количество неудачных попыток входа. Аккаунт заблокирован на {0} минут.</value>
@@ -150,8 +150,8 @@
   <data name="IncorrectPassword" xml:space="preserve">
     <value>Пароль неверный.</value>
   </data>
-  <data name="IncorrectPin" xml:space="preserve">
-    <value>Неправильный PIN.</value>
+  <data name="IncorrectEmail" xml:space="preserve">
+    <value>Неправильный Email.</value>
   </data>
   <data name="InvalidReferenceId" xml:space="preserve">
     <value>Идентификатор справочника({0}) не должен совполать с идентификатором родительского справочника({1}).</value>
