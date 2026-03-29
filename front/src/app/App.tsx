@@ -3,12 +3,12 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { Layout } from '../shared/ui'
 import { AuthPage } from '../pages/auth'
 import HomePage from '../pages/home/HomePage'
-import ApplicantSubmitPage from '../pages/home/ApplicantSubmitPage'
-import ApplicantTestPage from '../pages/home/ApplicantTestPage'
 import ApplicantDetailPage from '../pages/home/ApplicantDetailPage'
 import ProtectedRoute from './ProtectedRoute'
 import ApplicantsPage from "../pages/home/ApplicantsPage.tsx";
 import AccountPage from "../pages/account/AccountPage.tsx";
+import TestPage from '../pages/test/TestPage'
+import ApplicantSubmitPage from '../pages/applicant_submit/ApplicantSubmitPage'
 
 const router = createBrowserRouter([
   {
@@ -16,15 +16,15 @@ const router = createBrowserRouter([
     element: <ApplicantSubmitPage />,
   },
   {
+    path: '/test/:token',
+    element: <TestPage />,
+  },
+  {
     element: <Layout />,
     children: [
       {
         path: '/auth',
         element: <AuthPage />,
-      },
-      {
-        path: '/applicant-test/:token',
-        element: <ApplicantTestPage />,
       },
       {
         element: <ProtectedRoute />,
