@@ -10,15 +10,15 @@ import ProtectedRoute from './ProtectedRoute'
 
 const router = createBrowserRouter([
   {
+    path: '/applicant-submit',
+    element: <ApplicantSubmitPage />,
+  },
+  {
     element: <Layout />,
     children: [
       {
         path: '/auth',
         element: <AuthPage />,
-      },
-      {
-        path: '/applicant-submit',
-        element: <ApplicantSubmitPage />,
       },
       {
         path: '/applicant-test/:token',

@@ -57,12 +57,7 @@ namespace Library.Controllers
 
             var temporaryLink = $"{Request.Scheme}://{Request.Host}/applicant-test/{applicant.TemporaryToken}";
 
-            _logger.LogInformation("Сгенерирована временная ссылка для заявителя {Email}: {Link}", applicant.Email, temporaryLink);
-
-            // TODO: интегрировать реальную отправку email
-
-            var result = _mapper.Map<ApplicantDto>(applicant);
-            return CreatedAtAction(nameof(Get), new { id = applicant.Id }, result);
+            return Ok();
         }
 
         [Authorize]
