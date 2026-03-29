@@ -11,14 +11,18 @@ using Library.Mappers.Accounts.Impl;
 using Library.Models.Accounts;
 using Library.Services.Accounts;
 using Library.Services.Accounts.Impl;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Globalization;
+using System.Text;
 using System.Text.Json.Serialization;
 
 
@@ -35,9 +39,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.Configure<DefaultAdminCridensial>(builder.Configuration.GetSection("DefaultAdminCridensials"));
 
-builder.Services.AddAuthentication()
-    .AddBearerToken(IdentityConstants.BearerScheme)
-    .AddJwtBearer();
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options => {
+    options.TokenValidationParameters = new TokenValidationParameters {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Secret"]))
+    };
+});
 
 builder.Services.AddDbContext<AppPostgreSQLDbContext>(options =>
 {
