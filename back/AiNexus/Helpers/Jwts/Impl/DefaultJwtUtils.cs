@@ -1,6 +1,7 @@
 ﻿using Library.Helpers.Constants;
 using Library.Helpers.DbContexts;
 using Library.Mappers.Accounts;
+using Library.Models;
 using Library.Models.Accounts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,26 @@ namespace Library.Helpers.Jwts.Impl
 {
     public class DefaultJwtUtils(IOptions<AppSettings> appSettings, IRoleMapper roleMapper, UserManager<Account> userManager, AppPostgreSQLDbContext context) : IJwtUtils
     {
+        public string GenerateTestAccessJwt(Applicant applicant) {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(appSettings.Value.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim("applicantId", applicant.Id.ToString()),
+                    new Claim("name", applicant.Name),
+                    new Claim("surname", applicant.Surname),
+                    new Claim("email", applicant.Email),
+
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(appSettings.Value.TestTokenTTL),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+
+        }
         public string GenerateJwtToken(Account account)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
