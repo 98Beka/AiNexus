@@ -8,6 +8,7 @@ export default function Header() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { status } = useAppSelector((state) => state.auth)
+
   const { data: myAccount, isLoading: isAccountLoading } = useGetMyAccountQuery(undefined, {
     skip: status !== 'authenticated',
   })
@@ -41,7 +42,7 @@ export default function Header() {
       justifyContent: 'space-between',
     }}
   >
-          <Typography >AiNexus</Typography>
+          <Typography ></Typography>
         </Toolbar>
       </AppBar>
     )
@@ -72,7 +73,7 @@ export default function Header() {
         letterSpacing: 0.5,
       }}
     >
-      AiNexus
+
     </Typography>
 
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>

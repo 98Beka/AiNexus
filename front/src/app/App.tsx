@@ -7,6 +7,8 @@ import ApplicantSubmitPage from '../pages/home/ApplicantSubmitPage'
 import ApplicantTestPage from '../pages/home/ApplicantTestPage'
 import ApplicantDetailPage from '../pages/home/ApplicantDetailPage'
 import ProtectedRoute from './ProtectedRoute'
+import ApplicantsPage from "../pages/home/ApplicantsPage.tsx";
+import AccountPage from "../pages/account/AccountPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +37,14 @@ const router = createBrowserRouter([
             path: '/applicant/:id',
             element: <ApplicantDetailPage />,
           },
+            {
+                path: '/applicants',
+                element: <ApplicantsPage />,
+            },
+            {
+                path: '/account',
+                element: <AccountPage />,
+            },
         ],
       },
     ],
