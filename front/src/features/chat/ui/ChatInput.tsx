@@ -3,11 +3,8 @@ import { Box, TextField, IconButton, CircularProgress } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { sendMessage } from '../model/sendMessage';
-type Props = {
-  sessionId: string;
-};
 
-export const ChatInput = ({sessionId}: Props) => {
+export const ChatInput = () => {
   const [text, setText] = useState('');
   const [sessionStarted, setSessionStarted] = useState(false);
   const dispatch = useAppDispatch();
@@ -24,7 +21,7 @@ export const ChatInput = ({sessionId}: Props) => {
       }
     }
       
-    dispatch(sendMessage(text));
+    dispatch(sendMessage({message: text}));
     setText('');
   };
   return (

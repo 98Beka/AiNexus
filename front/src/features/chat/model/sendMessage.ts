@@ -1,69 +1,56 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import type { AppDispatch, RootState } from '@/app/store';
-import { streamChatRequest, streamStartTestRequest } from '../api';
+import { streamChatRequest } from '../api';
 import {
     appendResponseChunk,
     finishGeneration,
     setGenerationError,
     initMessageGeneration,
-    addUserMessage,
-    clearMessages
+    addUserMessage
 } from '@/entities/chat/model/slice';
-import type { MessageSendRequest, TestStartRequest } from '../api/type';
+import type { MessageSendRequest } from '../api/type';
 
-async function consumeStream(message: MessageSendRequest, dispatch: AppDispatch) {
-  for await (const chunk of streamChatRequest(message)) {
+
+
+async function consumeStream(
+  accessToken: string,
+  message: MessageSendRequest,
+  dispatch: AppDispatch
+) {
+  for await (const chunk of streamChatRequest(accessToken, message)) {
     dispatch(appendResponseChunk(chunk));
   }
 }
 
-async function consumeStartTestStream(request: TestStartRequest, dispatch: AppDispatch) {
-  for await (const chunk of streamStartTestRequest(request)) {
-    dispatch(appendResponseChunk(chunk));
-  }
-}
 
-export const initChat = createAsyncThunk<
+export const sendMessage = createAsyncThunk<
   void,
-  { sessionId: string; topicId: number },
+  { message: string },
   { state: RootState; dispatch: AppDispatch }
 >(
   'chat/sendMessage',
-  async ({ sessionId, topicId }, { dispatch }) => {
-    const startTestRequest: TestStartRequest = {
-      SessionId: sessionId,
-      TopicId: topicId,
-    };
+  async ({ message }, { dispatch, getState }) => {
+    
+    const accessToken = getState().session.accessToken;
+    const sessionId = getState().session.sessionId;
+    const userMsg = { SessionId:sessionId, content: message } as MessageSendRequest;
 
-    try {
-      dispatch(clearMessages());
-      dispatch(initMessageGeneration());
-
-      await consumeStartTestStream(startTestRequest, dispatch);
-
-      dispatch(finishGeneration());
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'unknown error';
-      dispatch(setGenerationError(errorMessage));
+    if (!accessToken) {
+      dispatch(setGenerationError('No access token'));
+      return;
     }
-  }
-);
-
-export const sendMessage = createAsyncThunk<void, string, { state: RootState; dispatch: AppDispatch }>(
-  'chat/sendMessage',
-  async (userText, { dispatch }) => {
-
-    const sessionId = "";
-    const userMsg = { sessionId: sessionId, content: userText } as MessageSendRequest;
 
     try {
-      dispatch(addUserMessage(userText))
+      dispatch(addUserMessage(message));
       dispatch(initMessageGeneration());
-      await consumeStream(userMsg, dispatch);
-      
+
+      await consumeStream(accessToken, userMsg, dispatch);
+
       dispatch(finishGeneration());
     } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'unkown error'
+      const errorMessage =
+        error instanceof Error ? error.message : 'unknown error';
+
       dispatch(setGenerationError(errorMessage));
     }
   }

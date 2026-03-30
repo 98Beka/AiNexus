@@ -13,7 +13,6 @@ using System.Text.Json;
 namespace AiNexus.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 public class ChatsController(
     ILogger<ChatsController> _logger,
@@ -22,6 +21,8 @@ public class ChatsController(
     IMapper _mapper,
     IFlowiseService _flowiseService
     ) : ControllerBase {
+
+
     [AllowAnonymous]
     [HttpGet("access_token/{testToken}")]
     public async Task<IActionResult> GetAccessToken(string testToken) {
@@ -34,11 +35,10 @@ public class ChatsController(
         return Ok(accessToken);
     }
 
+    [Authorize]
     [HttpPost("stream")]
     public async Task StreamChat([FromBody] ChatMessage message, CancellationToken cancellationToken) {
         SetupSseResponse();
-
-        var userId = GetUserId();
         try {
             var hasChunks = false;
             var flowiseRequest = new FlowiseRequest {
@@ -47,12 +47,12 @@ public class ChatsController(
                 CancellationToken = cancellationToken
             };
 
-            var stream = _flowiseService.StreamMessageAsync(flowiseRequest);
+            var stream = _flowiseService.StreamMessage(flowiseRequest);
 
             await ProcessStreamAsync(stream, cancellationToken);
 
         } catch (OperationCanceledException) {
-            _logger.LogInformation("Client {UserId} disconnected during chat stream.", userId);
+            _logger.LogInformation("Client disconnected during chat stream.");
         } catch (Exception ex) {
             _logger.LogError(ex, "Error during agent execution stream");
             var errorData = JsonSerializer.Serialize(new { error = "An error occurred during chat generation." });
