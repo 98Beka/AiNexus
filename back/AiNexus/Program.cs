@@ -1,4 +1,9 @@
 
+using System.Globalization;
+using System.Text;
+using System.Text.Json.Serialization;
+using AiNexus.Constants;
+using AiNexus.Infrastructure.Email;
 using AiNexus.Infrastructure.Flowise;
 using Library.Helpers.Constants;
 using Library.Helpers.Constants.Accounts;
@@ -21,9 +26,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Globalization;
-using System.Text;
-using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +40,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.Configure<DefaultAdminCridensial>(builder.Configuration.GetSection("DefaultAdminCridensials"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -69,6 +72,7 @@ builder.Services.AddScoped<IJwtUtils, DefaultJwtUtils>();
 builder.Services.AddScoped<IAccountService, DefaultAccountService>();
 builder.Services.AddHttpClient<IFlowiseService, FlowiseService>();
 builder.Services.AddScoped<DefaultJwtUtils, DefaultJwtUtils>();
+builder.Services.AddScoped<IEmailService, EmailSender>();
 
 builder.Services.AddSwaggerGen(option =>
 {
