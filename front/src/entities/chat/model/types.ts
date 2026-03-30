@@ -1,5 +1,12 @@
+export type Role = 'user' | 'assistant' | 'system';
+
 export interface Message {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
+  role: Role;
+  content?: string;
+}
+
+export interface ChatState  {
+  messages: Message[];
+  isStreaming: boolean;
+  error: string | null;
 }

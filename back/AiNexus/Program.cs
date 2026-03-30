@@ -68,6 +68,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IJwtUtils, DefaultJwtUtils>();
 builder.Services.AddScoped<IAccountService, DefaultAccountService>();
 builder.Services.AddHttpClient<IFlowiseService, FlowiseService>();
+builder.Services.AddScoped<DefaultJwtUtils, DefaultJwtUtils>();
 
 builder.Services.AddSwaggerGen(option =>
 {
