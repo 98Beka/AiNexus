@@ -23,14 +23,9 @@ public class FlowiseService(
             throw new InvalidOperationException("Flowise API URL is missing in configuration.");
         }
 
-        var form = new Dictionary<string, object> {
-            { "message", flowise_request.Message },
-            { "agent", flowise_request.AgentName }
-        };
-
         var payload = new Dictionary<string, object>
         {
-            { "form", form },
+            { "question", flowise_request.Message },
             { "chatId", flowise_request.ChatId },
             { "streaming", true }
         };
