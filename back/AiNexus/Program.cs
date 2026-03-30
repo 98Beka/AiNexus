@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 using AiNexus.Constants;
 using AiNexus.Infrastructure.Email;
 using AiNexus.Infrastructure.Flowise;
+using AiNexus.Services.Applicants;
+using AiNexus.Services.Applicants.Impl;
 using Library.Helpers.Constants;
 using Library.Helpers.Constants.Accounts;
 using Library.Helpers.DbContexts;
@@ -73,6 +75,7 @@ builder.Services.AddScoped<IAccountService, DefaultAccountService>();
 builder.Services.AddHttpClient<IFlowiseService, FlowiseService>();
 builder.Services.AddScoped<DefaultJwtUtils, DefaultJwtUtils>();
 builder.Services.AddScoped<IEmailService, EmailSender>();
+builder.Services.AddScoped<IApplicantService, ApplicantService>();
 
 builder.Services.AddSwaggerGen(option =>
 {

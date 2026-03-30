@@ -8,5 +8,6 @@
         public const string Base = Api + Version;
 
         public const string Authentication = Base + "authentication/";
+        public const string Applicants = Base + "applicants";
     }
 }
