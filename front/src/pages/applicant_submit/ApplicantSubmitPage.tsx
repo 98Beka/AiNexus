@@ -78,7 +78,7 @@ export default function ApplicantSubmitPage() {
               color="white"
               sx={{ lineHeight: 1.2 }}
             >
-              InDrive U
+              inVision U
             </Typography>
 
             <Typography
