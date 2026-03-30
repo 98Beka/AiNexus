@@ -13,7 +13,7 @@ export const store = configureStore({
     [chatApi.reducerPath]: chatApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [applicantApi.reducerPath]: applicantApi.reducer,
-        session: sessionReducer,
+    session: sessionReducer,
     chat: chatReducer,
   },
   middleware: (getDefaultMiddleware) =>

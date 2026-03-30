@@ -5,11 +5,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import { ChatInput } from '@/features/chat/ui/ChatInput';
 import { useAppSelector } from '@/app/hooks';
 
-type Props = {
-  sessionId: string;
-};
-
-export const ChatWindow = ({ sessionId }: Props) => {
+export const ChatWindow = () => {
   const { messages, error } = useAppSelector((state) => state.chat);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -100,7 +96,7 @@ export const ChatWindow = ({ sessionId }: Props) => {
       </Box>
 
       <Box sx={{ mt: isMobile ? 1 : 2 }}>
-        <ChatInput sessionId={sessionId} />
+        <ChatInput />
       </Box>
     </Box>
   );

@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 
 public interface IFlowiseService {
-    IAsyncEnumerable<string> StreamMessageAsync(FlowiseRequest flowise_request);
+    IAsyncEnumerable<string> StreamMessage(FlowiseRequest flowise_request);
 }
 
 public class FlowiseService(
@@ -15,7 +15,7 @@ public class FlowiseService(
     ILogger<FlowiseService> _logger
     ) : IFlowiseService {
 
-    public async IAsyncEnumerable<string> StreamMessageAsync(FlowiseRequest flowise_request) {
+    public async IAsyncEnumerable<string> StreamMessage(FlowiseRequest flowise_request) {
         var flowiseUrl = _configuration["Flowise:ApiUrl"];
         var apiKey = _configuration["Flowise:ApiKey"];
 
