@@ -23,8 +23,8 @@ public class ChatsController(
     IFlowiseService _flowiseService
     ) : ControllerBase {
     [AllowAnonymous]
-    [HttpGet("access_token/{test_token}")]
-    public async Task<IActionResult> GetAccessToken([FromRoute]string testToken) {
+    [HttpGet("access_token/{testToken}")]
+    public async Task<IActionResult> GetAccessToken(string testToken) {
         var aplicant = await _context.Applicants.Where(a => a.TemporaryToken == testToken).FirstOrDefaultAsync();
         if (aplicant == null)
             return NotFound();
@@ -32,29 +32,6 @@ public class ChatsController(
             return BadRequest("Test token has expired.");
         var accessToken = _jwtUtils.GenerateTestAccessJwt(aplicant);
         return Ok(accessToken);
-    }
-    [HttpPost("start_test")]
-    public async Task Start([FromBody] TestStartRequest request, CancellationToken cancellationToken) {
-        SetupSseResponse();
-
-        var userId = GetUserId();
-
-        try {
-
-            var flowiseRequest = new FlowiseRequest {
-                ChatId = request.SessionId,
-                CancellationToken = cancellationToken
-            };
-            var stream = _flowiseService.StreamMessageAsync(flowiseRequest);
-
-            await ProcessStreamAsync(stream, cancellationToken);
-
-        } catch (OperationCanceledException) {
-            _logger.LogInformation("Client {UserId} disconnected during test start.", userId);
-        } catch (Exception ex) {
-            _logger.LogError(ex, "Error during test start stream");
-            await SendErrorAsync("An error occurred during chat generation.", cancellationToken);
-        }
     }
 
     [HttpPost("stream")]

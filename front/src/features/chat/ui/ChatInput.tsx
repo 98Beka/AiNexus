@@ -1,0 +1,52 @@
+import { useState } from 'react';
+import { Box, TextField, IconButton, CircularProgress } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { sendMessage } from '../model/sendMessage';
+type Props = {
+  sessionId: string;
+};
+
+export const ChatInput = ({sessionId}: Props) => {
+  const [text, setText] = useState('');
+  const [sessionStarted, setSessionStarted] = useState(false);
+  const dispatch = useAppDispatch();
+  const isStreaming = useAppSelector(state => state.chat.isStreaming);
+
+  const handleSend = async () => {
+    if (!text.trim() || isStreaming) return;
+    if (!sessionStarted) {
+      try {
+        setSessionStarted(true);
+      } catch (error) {
+        console.error('Failed to start session:', error);
+        return; 
+      }
+    }
+      
+    dispatch(sendMessage(text));
+    setText('');
+  };
+  return (
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <TextField
+        fullWidth
+        placeholder="Введите сообщение..."
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
+        disabled={isStreaming}
+        size="small"
+        multiline
+        maxRows={4}
+      />
+      <IconButton
+        color="primary"
+        onClick={handleSend}
+        disabled={!text.trim() || isStreaming}
+      >
+        {isStreaming ? <CircularProgress size={24} /> : <SendIcon />}
+      </IconButton>
+    </Box>
+  );
+};

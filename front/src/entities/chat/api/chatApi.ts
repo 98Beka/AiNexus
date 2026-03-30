@@ -6,9 +6,7 @@ export const chatApi = createApi({
   endpoints: (builder) => ({
     getAccessToken: builder.query<string, string>({
       query: (testToken) => ({
-        url: `access_token/${testToken}`,
-        // Ожидаем текст, т.к. бэкенд возвращает Ok(accessToken) как строку
-        responseHandler: (response) => response.text(), 
+        url: `access_token/${testToken}`
       }),
     }),
   }),
