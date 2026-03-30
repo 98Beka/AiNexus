@@ -24,8 +24,7 @@ public class FlowiseService(
         }
 
         var form = new Dictionary<string, object> {
-            { "message", flowise_request.Message },
-            { "agent", flowise_request.AgentName }
+            { "message", flowise_request.Message }
         };
 
         var payload = new Dictionary<string, object>
