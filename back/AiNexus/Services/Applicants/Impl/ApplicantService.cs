@@ -37,11 +37,11 @@ public class ApplicantService : BaseService, IApplicantService
     public async Task<ApplicantDto> SubmitAsync(CreateApplicantRequest request)
     {
 
-        var exists = await _context.Applicants.AnyAsync(x => x.Email == request.Email);
-        if (exists)
-        {
-            throw new BadRequestException("Заявитель с таким Email уже существует.");
-        }
+        //var exists = await _context.Applicants.AnyAsync(x => x.Email == request.Email);
+        //if (exists)
+        //{
+        //    throw new BadRequestException("An applicant with this email already exists.");
+        //}
 
         var applicant = new Applicant
         {
