@@ -1,0 +1,59 @@
+using AiNexus.Enums;
+using AiNexus.Infrastructure.Flowise;
+using AiNexus.Models;
+using Library.Dtos.Test;
+using Library.Helpers.DbContexts;
+using Microsoft.EntityFrameworkCore;
+
+namespace AiNexus.Services.Test.Impl;
+
+public class TestService:ITestService
+{
+    private readonly IFlowiseService _flowiseService;
+    private readonly AppPostgreSQLDbContext _context;
+
+    public TestService(
+        AppPostgreSQLDbContext context,
+        IFlowiseService flowiseService
+        )
+    {
+        _context = context;
+        _flowiseService = flowiseService;
+    }
+    public async Task<bool> Initialize(TestInitRequest request)
+    {
+        var applicant = await _context.Applicants.FirstOrDefaultAsync(a=>a.TemporaryToken == request.TemporaryApplicantToken);
+        if (applicant == null) return false;
+        var testRes = new TestSession
+        {
+            StartedAt =  DateTime.Now,
+            ApplicantId = applicant.Id,
+            ChatSessionId =  request.ChatSessionId,
+        };
+        await _context.TestSessions.AddAsync(testRes);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> Finished(TestFinishRequest request)
+    {
+        var applicant = await _context.Applicants.FirstOrDefaultAsync(a=>a.TemporaryToken == request.TemporaryApplicantToken);
+        if (applicant == null) return false;
+        var test = await _context.TestSessions.FirstOrDefaultAsync(t => t.ApplicantId == applicant.Id);
+        if (test == null) return false;
+        test.IsCompleted = true;
+        test.FinishedAt = DateTime.Now;
+
+        var msgRequest = new FlowiseRequest()
+        {
+            Message = "start",
+            Agent = AgentNameEnum.scoring_agent.ToString(),
+            ChatId = test.ChatSessionId
+        };
+        var res = await _flowiseService.SendMessageAsync(msgRequest);
+        test.AnalyticResult = res;
+        
+        await _context.SaveChangesAsync();
+        return true;
+    }
+}

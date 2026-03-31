@@ -1,4 +1,5 @@
-﻿using Library.Models;
+﻿using AiNexus.Models;
+using Library.Models;
 using Library.Models.Accounts;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ public class AppPostgreSQLDbContext : IdentityDbContext<Account, Role, string>
     public DbSet<Session> Sessions { get; set; }
 
     public DbSet<Applicant> Applicants { get; set; }
+    public DbSet<TestSession> TestSessions { get; set; }
 
     public AppPostgreSQLDbContext(DbContextOptions options)
         : base(options)

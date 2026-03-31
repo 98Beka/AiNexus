@@ -10,5 +10,6 @@
         public const string Authentication = Base + "authentication/";
         public const string Applicants = Base + "applicants";
         public const string Proctoring = Base + "proctoring";
+        public const string Test = Base + "test";
     }
 }

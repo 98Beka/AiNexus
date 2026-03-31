@@ -32,7 +32,7 @@ public class ProctoringService:IProctoringService
     public async Task<ComparisonFacesResponse> ComparisonFacesAsync(PhotoRequest request)
     {
         var applicant = await _context.Applicants
-            .FirstOrDefaultAsync(a => a.Id == request.Id);
+            .FirstOrDefaultAsync(a => a.TemporaryToken.Trim() == request.TemporaryApplicantToken.Trim());
 
         if (applicant == null)
             throw new Exception("Applicant not found");
@@ -46,7 +46,7 @@ public class ProctoringService:IProctoringService
         var originalPhoto = CleanBase64(applicant.Photo);
         var photo = CleanBase64(request.Photo);
 
-        // 🔥 Проверка base64 (ОЧЕНЬ ВАЖНО)
+        // Проверка base64 
         ValidateBase64(originalPhoto, "OriginalPhoto");
         ValidateBase64(photo, "Photo");
 

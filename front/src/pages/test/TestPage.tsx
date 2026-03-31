@@ -221,9 +221,9 @@ export default function TestPage() {
             </Box>
           )}
 
-          {messages.map((msg) => (
+          {messages.map((msg,index) => (
             <Box
-              key={msg.id}
+              key={index}
               alignSelf={msg.role === 'user' ? 'flex-end' : 'flex-start'}
               maxWidth="72%"
             >
