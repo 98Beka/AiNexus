@@ -1,9 +1,11 @@
-﻿using AiNexus.Infrastructure.Email;
+﻿using AiNexus.Helpers.Paginations;
+using AiNexus.Infrastructure.Email;
 using AutoMapper;
 using Library.Dtos.Applicants;
 using Library.Helpers.ApplicationExceptions;
 using Library.Helpers.Constants;
 using Library.Helpers.DbContexts;
+using Library.Helpers.Paginations;
 using Library.Models;
 using Library.Services;
 using Microsoft.EntityFrameworkCore;
@@ -64,12 +66,28 @@ public class ApplicantService : BaseService, IApplicantService
     }
 
 
-    public async Task<List<ApplicantDto>> GetApplicantsAsync()
+    public async Task<PagedResponse<ApplicantDto>> GetApplicantsAsync(PaginationParameters parameters)
     {
-        var list = await _context.Applicants
+        var query = _context.Applicants
             .OrderByDescending(x => x.CreatedAt)
+            .AsQueryable();
+
+        var count = await query.CountAsync();
+
+        var items = await query
+            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
             .ToListAsync();
-        return _mapper.Map<List<ApplicantDto>>(list);
+
+        var mapped = _mapper.Map<List<ApplicantDto>>(items);
+
+        return new PagedResponse<ApplicantDto>
+        {
+            Items = mapped,
+            TotalCount = count,
+            CurrentPage = parameters.PageNumber,
+            PageSize = parameters.PageSize
+        };
     }
 
 
