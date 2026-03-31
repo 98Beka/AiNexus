@@ -7,9 +7,4 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
-    volumes:
-      - .:/app:cached
-      - /app/node_modules
-    environment:
-      - NODE_ENV=production
     restart: unless-stopped
