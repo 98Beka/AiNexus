@@ -29,6 +29,18 @@ export type TestResultRequest = {
   testResultDetails?: string
 }
 
+export type GetApplicantsResponse = {
+  items: ApplicantDto[]
+  totalCount: number
+  currentPage: number
+  pageSize: number
+}
+
+export type GetApplicantsRequest = {
+  pageNumber: number
+  pageSize: number
+}
+
 export const applicantApi = createApi({
   reducerPath: 'applicantApi',
   baseQuery: createBaseQuery({
@@ -42,18 +54,13 @@ export const applicantApi = createApi({
         body,
       }),
     }),
-    getApplicants: builder.query<ApplicantDto[], void>({
-      query: () => ({
-        url: '',
-        method: 'GET',
-      }),
-    }),
-    getApplicant: builder.query<ApplicantDto, string>({
-      query: (id: string) => ({
-        url: id,
-        method: 'GET',
-      }),
-    }),
+    getApplicants: builder.query<GetApplicantsResponse, GetApplicantsRequest>({
+  query: (body: GetApplicantsRequest) => ({
+    url: '',     
+    method: 'POST',
+    body,
+  }),
+}),
     getApplicantByToken: builder.query<ApplicantDto, string>({
       query: (token: string) => ({
         url: `token/${token}`,
