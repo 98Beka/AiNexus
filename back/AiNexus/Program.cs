@@ -21,12 +21,10 @@ using Library.Models.Accounts;
 using Library.Services.Accounts;
 using Library.Services.Accounts.Impl;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -44,7 +42,6 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.Configure<DefaultAdminCridensial>(builder.Configuration.GetSection("DefaultAdminCridensials"));
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddHttpClient();
 
 builder.Services.AddAuthentication(options => {
@@ -77,7 +74,18 @@ builder.Services.AddScoped<IJwtUtils, DefaultJwtUtils>();
 builder.Services.AddScoped<IAccountService, DefaultAccountService>();
 builder.Services.AddHttpClient<IFlowiseService, FlowiseService>();
 builder.Services.AddScoped<DefaultJwtUtils, DefaultJwtUtils>();
-builder.Services.AddScoped<IEmailService, EmailSender>();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.Configure<EmailApiSettings>(
+    builder.Configuration.GetSection("EmailApi"));
+
+builder.Services.AddHttpClient<IEmailService, EmailSender>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<IOptions<EmailApiSettings>>().Value;
+    client.BaseAddress = new Uri(settings.BaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
 builder.Services.AddScoped<IApplicantService, ApplicantService>();
 builder.Services.AddScoped<IProctoringService, ProctoringService>();
 
