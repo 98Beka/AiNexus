@@ -55,12 +55,18 @@ export const applicantApi = createApi({
       }),
     }),
     getApplicants: builder.query<GetApplicantsResponse, GetApplicantsRequest>({
-  query: (body: GetApplicantsRequest) => ({
-    url: '',     
-    method: 'POST',
-    body,
-  }),
-}),
+      query: (body: GetApplicantsRequest) => ({
+        url: '',
+        method: 'POST',
+        body,
+      }),
+    }),
+    getApplicant: builder.query<ApplicantDto, string>({
+      query: (id: string) => ({
+        url: id,
+        method: 'GET',
+      }),
+    }),
     getApplicantByToken: builder.query<ApplicantDto, string>({
       query: (token: string) => ({
         url: `token/${token}`,

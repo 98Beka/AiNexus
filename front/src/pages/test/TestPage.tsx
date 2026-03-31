@@ -278,8 +278,8 @@ export default function TestPage() {
 
             {isEmpty && <ReadyCard lastFace={lastFace} />}
 
-            {messages.map((msg) => (
-              <div key={msg.id} style={{ ...s.messageRow, justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
+            {messages.map((msg,index) => (
+              <div key={index} style={{ ...s.messageRow, justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
                 {msg.role !== 'user' && <div style={s.aiAvatar}>AI</div>}
                 <div style={msg.role === 'user' ? s.userBubble : s.aiBubble}>{msg.content}</div>
               </div>

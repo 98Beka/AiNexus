@@ -22,7 +22,7 @@ namespace Library.Helpers.Jwts.Impl
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim("applicantId", applicant.Id.ToString()),
+                    new Claim("id", applicant.Id.ToString()),
                     new Claim("name", applicant.Name),
                     new Claim("surname", applicant.Surname),
                     new Claim("email", applicant.Email),

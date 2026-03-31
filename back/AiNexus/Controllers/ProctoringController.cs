@@ -2,11 +2,13 @@ using AiNexus.Models.Proctoring;
 using AiNexus.Services.Proctoring;
 using AutoMapper;
 using Library.Helpers.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AiNexus.Controllers;
 [Route(AppRoutes.Proctoring)]
 [ApiController]
+[Authorize]
 public class ProctoringController:ControllerBase
 {
     private readonly IMapper _mapper;
@@ -21,7 +23,9 @@ public class ProctoringController:ControllerBase
     public async Task<ActionResult<ComparisonFacesResponse>> ComparisonFacesAsync(PhotoRequest photoRequest)
     {
         if(photoRequest == null)return NotFound();
-        var res = await _proctoringService.ComparisonFacesAsync(photoRequest);
+        var userId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+        var res = await _proctoringService.ComparisonFacesAsync(photoRequest,userId);
+        
         return Ok(res);
     }
     

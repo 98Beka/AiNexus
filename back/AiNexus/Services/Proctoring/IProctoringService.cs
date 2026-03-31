@@ -4,5 +4,5 @@ namespace AiNexus.Services.Proctoring;
 
 public interface IProctoringService
 {
-    Task<ComparisonFacesResponse> ComparisonFacesAsync(PhotoRequest request);
+    Task<ComparisonFacesResponse> ComparisonFacesAsync(PhotoRequest request,string applicantId);
 }

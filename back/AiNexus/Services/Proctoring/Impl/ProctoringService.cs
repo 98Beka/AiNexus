@@ -29,10 +29,11 @@ public class ProctoringService:IProctoringService
         _mapper = mapper;
         _httpClient = httpClient;
     } 
-    public async Task<ComparisonFacesResponse> ComparisonFacesAsync(PhotoRequest request)
+    public async Task<ComparisonFacesResponse> ComparisonFacesAsync(PhotoRequest request,string applicantId)
     {
+        var applicantGuid = Guid.Parse(applicantId);
         var applicant = await _context.Applicants
-            .FirstOrDefaultAsync(a => a.TemporaryToken.Trim() == request.TemporaryApplicantToken.Trim());
+            .FirstOrDefaultAsync(a => a.Id == applicantGuid);
 
         if (applicant == null)
             throw new Exception("Applicant not found");
