@@ -1,6 +1,8 @@
+using AiNexus.Helpers.Paginations;
 using AiNexus.Services.Applicants;
 using Library.Dtos.Applicants;
 using Library.Helpers.Constants;
+using Library.Helpers.Paginations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,10 +35,11 @@ public class ApplicantsController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet]
-    public async Task<List<ApplicantDto>> GetApplicants()
+    [HttpPost]
+    public async Task<PagedResponse<ApplicantDto>> GetApplicants(PaginationParameters parameters)
     {
-        return await _applicantService.GetApplicantsAsync();
+        var res = await _applicantService.GetApplicantsAsync(parameters);
+        return res;
     }
 
     [Authorize]
