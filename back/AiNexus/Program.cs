@@ -9,6 +9,8 @@ using AiNexus.Services.Applicants;
 using AiNexus.Services.Applicants.Impl;
 using AiNexus.Services.Proctoring;
 using AiNexus.Services.Proctoring.Impl;
+using AiNexus.Services.Test;
+using AiNexus.Services.Test.Impl;
 using Library.Helpers.Constants;
 using Library.Helpers.Constants.Accounts;
 using Library.Helpers.DbContexts;
@@ -88,6 +90,7 @@ builder.Services.AddHttpClient<IEmailService, EmailSender>((sp, client) =>
 
 builder.Services.AddScoped<IApplicantService, ApplicantService>();
 builder.Services.AddScoped<IProctoringService, ProctoringService>();
+builder.Services.AddScoped<ITestService, TestService>();
 
 
 builder.Services.AddSwaggerGen(option =>
