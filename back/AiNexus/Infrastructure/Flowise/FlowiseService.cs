@@ -8,6 +8,7 @@ using System.Text.Json;
 
 public interface IFlowiseService {
     IAsyncEnumerable<string> StreamMessage(FlowiseRequest flowise_request);
+    Task<string> SendMessageAsync(FlowiseRequest flowise_request);
 }
 
 public class FlowiseService(
@@ -15,6 +16,58 @@ public class FlowiseService(
     IConfiguration _configuration,
     ILogger<FlowiseService> _logger
     ) : IFlowiseService {
+
+    public async Task<string> SendMessageAsync(FlowiseRequest flowise_request) {
+        var flowiseUrl = _configuration["Flowise:ApiUrl"];
+        var apiKey = _configuration["Flowise:ApiKey"];
+
+        if (string.IsNullOrEmpty(flowiseUrl)) {
+            throw new InvalidOperationException("Flowise API URL is missing in configuration.");
+        }
+
+        var form = new Dictionary<string, object> {
+            { "message", flowise_request.Message },
+            { "agent", flowise_request.Agent }
+        };
+
+        var payload = new Dictionary<string, object>
+        {
+            { "form", form },
+            { "chatId", flowise_request.ChatId },
+            { "streaming", false }
+        };
+
+        var request_content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, flowiseUrl);
+        request.Content = request_content;
+
+        if (!string.IsNullOrWhiteSpace(apiKey)) {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+        }
+
+        using var response = await _httpClient.SendAsync(request, flowise_request.CancellationToken);
+        var responseContent = await response.Content.ReadAsStringAsync(flowise_request.CancellationToken);
+
+        if (!response.IsSuccessStatusCode) {
+            _logger.LogError("Flowise API Error: {StatusCode} - Body: {ErrorBody}", response.StatusCode, responseContent);
+            throw new HttpRequestException($"Flowise error ({(int)response.StatusCode}): {responseContent}");
+        }
+
+        try {
+            using var doc = JsonDocument.Parse(responseContent);
+            var root = doc.RootElement;
+
+            if (root.TryGetProperty("text", out var textElement)) {
+                return textElement.GetString() ?? string.Empty;
+            }
+            _logger.LogWarning("Flowise response did not contain 'text' property. Returning raw content.");
+            return responseContent;
+        } catch (JsonException ex) {
+            _logger.LogWarning(ex, "Failed to parse non-streaming JSON from Flowise. Returning raw content.");
+            return responseContent;
+        }
+    }
 
     public async IAsyncEnumerable<string> StreamMessage(FlowiseRequest flowise_request) {
         var flowiseUrl = _configuration["Flowise:ApiUrl"];
