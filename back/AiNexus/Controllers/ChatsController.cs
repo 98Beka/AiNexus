@@ -1,4 +1,5 @@
-﻿using AiNexus.Infrastructure.Flowise;
+﻿using AiNexus.Enums;
+using AiNexus.Infrastructure.Flowise;
 using AiNexus.Models;
 using AiNexus.Models.Chats;
 using AiNexus.Models.Models;
@@ -44,7 +45,8 @@ public class ChatsController(
             var flowiseRequest = new FlowiseRequest {
                 Message = message.Content,
                 ChatId = message.SessionId,
-                CancellationToken = cancellationToken
+                CancellationToken = cancellationToken,
+                Agent = AgentNameEnum.user_facing_agent.ToString()
             };
 
             var stream = _flowiseService.StreamMessage(flowiseRequest);
@@ -68,11 +70,6 @@ public class ChatsController(
         Response.Headers.Connection = "keep-alive";
     }
 
-    private string GetUserId() {
-        return User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
-             ?? User.FindFirst("sub")?.Value
-             ?? "unknown_user";
-    }
 
     private async Task ProcessStreamAsync(IAsyncEnumerable<string> stream, CancellationToken cancellationToken) {
         var hasChunks = false;
@@ -90,12 +87,6 @@ public class ChatsController(
 
         var completeData = JsonSerializer.Serialize(new ChatStreamChunk("", true));
         await Response.WriteAsync($"data: {completeData}\n\n", cancellationToken);
-        await Response.Body.FlushAsync(cancellationToken);
-    }
-
-    private async Task SendErrorAsync(string errorMessage, CancellationToken cancellationToken) {
-        var errorData = JsonSerializer.Serialize(new { error = errorMessage });
-        await Response.WriteAsync($"data: {errorData}\n\n", cancellationToken);
         await Response.Body.FlushAsync(cancellationToken);
     }
 }

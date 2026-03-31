@@ -1,5 +1,6 @@
 ﻿namespace AiNexus.Infrastructure.Flowise;
 
+using MathNet.Numerics.Providers.LinearAlgebra;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -22,10 +23,14 @@ public class FlowiseService(
         if (string.IsNullOrEmpty(flowiseUrl)) {
             throw new InvalidOperationException("Flowise API URL is missing in configuration.");
         }
+        var form = new Dictionary<string, object> {
+            { "message", flowise_request.Message },
+            { "agent", flowise_request.Agent }
+        };
 
         var payload = new Dictionary<string, object>
         {
-            { "question", flowise_request.Message },
+            { "form", form },
             { "chatId", flowise_request.ChatId },
             { "streaming", true }
         };
