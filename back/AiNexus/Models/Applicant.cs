@@ -15,4 +15,5 @@ public class Applicant
     public string? TestResultDetails { get; set; }
     public string TemporaryToken { get; set; } = Guid.NewGuid().ToString("N");
     public DateTime TemporaryTokenExpiresAt { get; set; } = DateTime.UtcNow.AddDays(3);
+    public string Photo {get; set;} = string.Empty;
 }

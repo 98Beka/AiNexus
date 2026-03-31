@@ -50,6 +50,7 @@ public class ApplicantService : BaseService, IApplicantService
             Patronymic = request.Patronymic,
             Email = request.Email,
             Phone = request.Phone,
+            Photo =  request.Photo,
             Status = "Submitted",
             TemporaryToken = Guid.NewGuid().ToString("N"),
             TemporaryTokenExpiresAt = DateTime.UtcNow.AddHours(24),

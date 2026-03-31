@@ -17,4 +17,6 @@ public class CreateApplicantRequest
     public string Email { get; set; }
 
     public string? Phone { get; set; }
+    [Required]
+    public string Photo { get; set; }=string.Empty;
 }

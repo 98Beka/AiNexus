@@ -7,6 +7,8 @@ using AiNexus.Infrastructure.Email;
 using AiNexus.Infrastructure.Flowise;
 using AiNexus.Services.Applicants;
 using AiNexus.Services.Applicants.Impl;
+using AiNexus.Services.Proctoring;
+using AiNexus.Services.Proctoring.Impl;
 using Library.Helpers.Constants;
 using Library.Helpers.Constants.Accounts;
 using Library.Helpers.DbContexts;
@@ -43,6 +45,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.Configure<DefaultAdminCridensial>(builder.Configuration.GetSection("DefaultAdminCridensials"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddHttpClient();
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -76,6 +79,8 @@ builder.Services.AddHttpClient<IFlowiseService, FlowiseService>();
 builder.Services.AddScoped<DefaultJwtUtils, DefaultJwtUtils>();
 builder.Services.AddScoped<IEmailService, EmailSender>();
 builder.Services.AddScoped<IApplicantService, ApplicantService>();
+builder.Services.AddScoped<IProctoringService, ProctoringService>();
+
 
 builder.Services.AddSwaggerGen(option =>
 {
