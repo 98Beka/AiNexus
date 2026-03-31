@@ -1,8 +1,9 @@
-﻿using AiNexus.Constants;
-using AiNexus.Helpers.ApplicationExceptions;
-using MailKit.Net.Smtp;
+﻿using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
-using MimeKit;
+using AiNexus.Helpers.ApplicationExceptions;
+using AiNexus.Dtos.Emails;
+using AiNexus.Constants;
 
 namespace AiNexus.Infrastructure.Email;
 
@@ -13,12 +14,20 @@ public interface IEmailService
 
 public class EmailSender : IEmailService
 {
-    private readonly EmailSettings _emailSettings;
+    private readonly HttpClient _httpClient;
+    private readonly EmailApiSettings _settings;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<EmailSender> _logger;
 
-    public EmailSender(IOptions<EmailSettings> emailSettings, ILogger<EmailSender> logger)
+    public EmailSender(
+        HttpClient httpClient,
+        IOptions<EmailApiSettings> settings,
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<EmailSender> logger)
     {
-        _emailSettings = emailSettings.Value;
+        _httpClient = httpClient;
+        _settings = settings.Value;
+        _httpContextAccessor = httpContextAccessor;
         _logger = logger;
     }
 
@@ -26,28 +35,55 @@ public class EmailSender : IEmailService
     {
         try
         {
-            using var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
-            message.To.Add(new MailboxAddress(toName ?? toEmail, toEmail));
-            message.Subject = subject;
+            var httpContext = _httpContextAccessor.HttpContext
+                ?? throw new UnauthorizedAccessException("HttpContext is not available.");
 
-            var bodyBuilder = new BodyBuilder { HtmlBody = htmlBody };
-            message.Body = bodyBuilder.ToMessageBody();
+            var token = await httpContext.GetTokenAsync("access_token");
 
-            using var client = new SmtpClient();
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                var authHeader = httpContext.Request.Headers.Authorization.ToString();
 
-            await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, true);
-            await client.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+                if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Bearer "))
+                    throw new UnauthorizedAccessException("Access token not found.");
 
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
+                token = authHeader["Bearer ".Length..].Trim();
+            }
+
+            var requestBody = new SendEmailApiRequest
+            {
+                ToEmail = toEmail,
+                ToName = toName,
+                Subject = subject,
+                HtmlBody = htmlBody
+            };
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, _settings.SendEndpoint)
+            {
+                Content = JsonContent.Create(requestBody)
+            };
+
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                _logger.LogError("Email API returned {StatusCode}. Response: {Response}", response.StatusCode, errorBody);
+                throw new EmailException($"Email API failed with status code {(int)response.StatusCode}.");
+            }
 
             _logger.LogInformation("Email successfully sent to {Email}", toEmail);
+        }
+        catch (EmailException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send email to {Email} with subject {Subject}", toEmail, subject);
-            throw new EmailException("Failed to send email.", ex);
+            throw new EmailException("Failed to send email via external email API.", ex);
         }
     }
 }
