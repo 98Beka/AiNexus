@@ -29,18 +29,6 @@ export type TestResultRequest = {
   testResultDetails?: string
 }
 
-export type GetApplicantsResponse = {
-  items: ApplicantDto[]
-  totalCount: number
-  currentPage: number
-  pageSize: number
-}
-
-export type GetApplicantsRequest = {
-  pageNumber: number
-  pageSize: number
-}
-
 export const applicantApi = createApi({
   reducerPath: 'applicantApi',
   baseQuery: createBaseQuery({
@@ -61,6 +49,7 @@ export const applicantApi = createApi({
         body,
       }),
     }),
+
     getApplicant: builder.query<ApplicantDto, string>({
       query: (id: string) => ({
         url: id,

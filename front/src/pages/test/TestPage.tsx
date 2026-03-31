@@ -20,7 +20,7 @@ const FACE_STATUS: Record<FaceStatus, { label: string; dot: string }> = {
 };
 
 // Camera width presets
-const CAM_SIZES = [160, 220, 300];
+const CAM_SIZES = [160, 220, 300, 450];
 
 function captureFrameBase64(video: HTMLVideoElement, canvas: HTMLCanvasElement): string {
   canvas.width = video.videoWidth;
@@ -135,10 +135,9 @@ export default function TestPage() {
   const [camError, setCamError]     = useState(false);
   const [camSizeIdx, setCamSizeIdx] = useState(1);
 
-  // Последний финальный результат (без 'checking') — для стабильного чеклиста
   const [lastFace, setLastFace] = useState<Exclude<FaceStatus, 'checking'>>('idle');
 
-  const [pos, setPos]   = useState({ x: 16, y: 16 });
+  const [pos, setPos]   = useState({ x: 0, y: 0 });
   const dragging        = useRef(false);
   const dragOffset      = useRef({ x: 0, y: 0 });
   const popupRef        = useRef<HTMLDivElement>(null);
@@ -149,7 +148,20 @@ export default function TestPage() {
   const messagesEnd = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // ── Camera ───────────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    const updatePosition = () => {
+      setPos({
+        x: window.innerWidth - CAM_SIZES[camSizeIdx] - 16,
+        y: 16, 
+      })
+    }
+
+    updatePosition()
+    window.addEventListener('resize', updatePosition)
+    return () => window.removeEventListener('resize', updatePosition)
+  }, [])
+
   useEffect(() => {
     let active = true;
     navigator.mediaDevices
@@ -163,7 +175,6 @@ export default function TestPage() {
     return () => { active = false; streamRef.current?.getTracks().forEach((t) => t.stop()); };
   }, []);
 
-  // ── Face detection ───────────────────────────────────────────────────────
   const checkFace = useCallback(async () => {
     const video = videoRef.current, canvas = canvasRef.current;
     if (!video || !canvas || video.readyState < 2) return;
@@ -182,10 +193,8 @@ export default function TestPage() {
 
   useEffect(() => { const id = setInterval(checkFace, 3000); return () => clearInterval(id); }, [checkFace]);
 
-  // ── Auto-scroll ──────────────────────────────────────────────────────────
   useEffect(() => { messagesEnd.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, currentStream]);
 
-  // ── Auto-resize textarea ─────────────────────────────────────────────────
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
@@ -193,7 +202,6 @@ export default function TestPage() {
     el.style.height = Math.min(el.scrollHeight, 160) + 'px';
   }, [input]);
 
-  // ── Drag mouse ───────────────────────────────────────────────────────────
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('button')) return;
     dragging.current = true;
