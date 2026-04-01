@@ -68,6 +68,7 @@ export const useChatStream = (jwtToken?: string) => {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const sessionId = useRef<string>(crypto.randomUUID());
+  //sessionSlice.sessionId = sessionId
   const currentStreamRef = useRef<string>('');
 
   const updateStream = useCallback((chunk: string) => {
