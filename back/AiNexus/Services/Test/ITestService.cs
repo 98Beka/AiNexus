@@ -4,6 +4,6 @@ namespace AiNexus.Services.Test;
 
 public interface ITestService
 {
-    Task<bool> Initialize(TestInitRequest request);
-    Task<bool> Finished(TestFinishRequest request);
+    Task<bool> Initialize(TestInitRequest request,string userId);
+    Task<bool> Finished(string userId);
 }

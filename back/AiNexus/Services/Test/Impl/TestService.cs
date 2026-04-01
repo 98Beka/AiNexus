@@ -20,9 +20,11 @@ public class TestService:ITestService
         _context = context;
         _flowiseService = flowiseService;
     }
-    public async Task<bool> Initialize(TestInitRequest request)
+    public async Task<bool> Initialize(TestInitRequest request, string userId)
     {
-        var applicant = await _context.Applicants.FirstOrDefaultAsync(a=>a.TemporaryToken == request.TemporaryApplicantToken);
+        var userGuid = Guid.Parse(userId);
+
+        var applicant = await _context.Applicants.FirstOrDefaultAsync(a=>a.Id ==userGuid );
         if (applicant == null) return false;
         var testRes = new TestSession
         {
@@ -35,9 +37,10 @@ public class TestService:ITestService
         return true;
     }
 
-    public async Task<bool> Finished(TestFinishRequest request)
+    public async Task<bool> Finished(string userId)
     {
-        var applicant = await _context.Applicants.FirstOrDefaultAsync(a=>a.TemporaryToken == request.TemporaryApplicantToken);
+        var userGuid = Guid.Parse(userId);
+        var applicant = await _context.Applicants.FirstOrDefaultAsync(a=>a.Id == userGuid);
         if (applicant == null) return false;
         var test = await _context.TestSessions.FirstOrDefaultAsync(t => t.ApplicantId == applicant.Id);
         if (test == null) return false;

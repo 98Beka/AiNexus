@@ -19,17 +19,16 @@ public class TestController:Controller
     {
         if (request == null)
             return BadRequest();
+        var userId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
 
-        var res = await _testService.Initialize(request);
+        var res = await _testService.Initialize(request,userId);
         return Ok(res);
     }
     [HttpPost("finish")]
-    public async Task<IActionResult> TestFinish([FromBody] TestFinishRequest request)
+    public async Task<IActionResult> TestFinish()
     {
-        if (request == null)
-            return BadRequest();
-
-        var res = await _testService.Finished(request); 
+        var userId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+        var res = await _testService.Finished(userId); 
         return Ok(res);
     }
 }
