@@ -8,7 +8,7 @@ namespace AiNexus.Infrastructure.Email;
 
 public interface IEmailService
 {
-    Task SendEmailAsync(string toEmail, string toName, string subject, string htmlBody);
+    Task SendEmailAsync(string toEmail, string toName, string subject, string htmlBody, byte[]? inlineImageBytes, string? inlineImageContentId);
 }
 
 public class EmailSender : IEmailService
@@ -27,7 +27,7 @@ public class EmailSender : IEmailService
         _logger = logger;
     }
 
-    public async Task SendEmailAsync(string toEmail, string toName, string subject, string htmlBody)
+    public async Task SendEmailAsync(string toEmail, string toName, string subject, string htmlBody, byte[]? inlineImageBytes, string? inlineImageContentId)
     {
         try
         {
@@ -36,7 +36,9 @@ public class EmailSender : IEmailService
                 ToEmail = toEmail,
                 ToName = toName,
                 Subject = subject,
-                HtmlBody = htmlBody
+                HtmlBody = htmlBody,
+                InlineImageBytes = inlineImageBytes,
+                InlineImageContentId = inlineImageContentId
             };
 
             var response = await _httpClient.PostAsJsonAsync(_settings.SendEndpoint, requestBody);
