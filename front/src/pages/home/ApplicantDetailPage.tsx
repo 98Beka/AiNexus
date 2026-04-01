@@ -53,8 +53,16 @@ export default function ApplicantDetailPage() {
     if (!applicant) return <Alert severity="info">Заявитель не найден.</Alert>
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
-            {/* Личные данные */}
+        <Box
+            sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', md: '360px 1fr' },
+                gap: 2,
+                p: 2,
+                alignItems: 'start',
+            }}
+        >
+            {/* Левая колонка — инфо о заявителе */}
             <DetailSection>
                 <Box
                     sx={{
@@ -84,16 +92,6 @@ export default function ApplicantDetailPage() {
                 <DetailRow label="Фамилия" value={applicant.surname} />
                 <DetailRow label="Email" value={applicant.email} />
                 <DetailRow label="Телефон" value={applicant.phone} />
-            </DetailSection>
-
-            {/* Тест */}
-            <DetailSection title="Результат теста">
-                <DetailRow label="Баллы" value={applicant.score} />
-                <DetailRow label="Детали результата" value={applicant.testResultDetails} />
-            </DetailSection>
-
-            {/* Статус */}
-            <DetailSection title="Статус">
                 <DetailRow label="Текущий статус" value={applicant.status} />
                 <DetailRow label="Временный токен" value={applicant.temporaryToken} />
                 <DetailRow
@@ -105,6 +103,52 @@ export default function ApplicantDetailPage() {
                     }
                 />
             </DetailSection>
+
+            {/* Правая колонка — результат теста */}
+            <Card
+                sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    boxShadow: 1,
+                    bgcolor: 'background.paper',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1.5,
+                    height: '100%',
+                }}
+            >
+                <Typography variant="subtitle1" fontWeight={600}>
+                    Результат теста
+                </Typography>
+
+                <DetailRow label="Баллы" value={applicant.score} />
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flexGrow: 1 }}>
+                    <Typography variant="body2" color="text.secondary">
+                        Детали результата
+                    </Typography>
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            maxHeight: 700,
+                            p: 2,
+                            borderRadius: 2,
+                            bgcolor: '#f5f5f5',
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            overflowY: 'auto',
+                            fontFamily: 'monospace',
+                            fontSize: '0.875rem',
+                            lineHeight: 1.7,
+                            color: 'text.primary',
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word',
+                        }}
+                    >
+                        {applicant.testResultDetails ?? '—'}
+                    </Box>
+                </Box>
+            </Card>
         </Box>
     )
 }
