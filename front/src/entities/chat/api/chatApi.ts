@@ -11,14 +11,8 @@ export const chatApi = createApi({
       query: (testToken) => ({
         url: `/api/Chats/access_token/${testToken}`
       }),
-    }),
-    initializeTest: builder.mutation<void, { chatSessionId: string }>({
-      query: (body) => ({ url: '/api/v1/test/initialize', method: 'POST', body }),
-    }),
-    finishTest: builder.mutation<void, undefined>({
-      query: () => ({ url: '/api/v1/test/finish', method: 'POST' }),
-    }),
+    })
   }),
 });
 
-export const { useGetAccessTokenQuery, useInitializeTestMutation, useFinishTestMutation } = chatApi;
+export const { useGetAccessTokenQuery} = chatApi;

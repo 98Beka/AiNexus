@@ -6,7 +6,6 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import { useGetAccessTokenQuery } from '@/entities/chat/api/chatApi';
 import { useChatStream } from '@/features/chat/lib/useChatStream';
-import { useInitializeTestMutation, useFinishTestMutation } from '@/entities/chat/api/chatApi';
 import { useParams } from 'react-router-dom';
 
 type FaceStatus = 'idle' | 'checking' | 'ok' | 'no_face' | 'error';
@@ -168,7 +167,7 @@ function IntroModal({
             cursor: (!camOk || isStarting) ? 'not-allowed' : 'pointer',
           }}
           onClick={onStart}
-          disabled={!camOk || isStarting}
+          //disabled={!camOk || isStarting}
         >
           {isStarting
             ? <><CircularProgress size={14} sx={{ color: '#fff' }} /> Запуск...</>
@@ -297,9 +296,6 @@ export default function TestPage() {
   const { data: jwtToken, isLoading: isAuthLoading, isError } = useGetAccessTokenQuery(token as any, { skip: !token });
   const { messages, currentStream, isStreaming, sendMessage } = useChatStream(jwtToken);
 
-  const [initializeTest] = useInitializeTestMutation();
-  const [finishTest]     = useFinishTestMutation();
-
   const [input, setInput]           = useState('');
   const [faceStatus, setFaceStatus] = useState<FaceStatus>('idle');
   const [camError, setCamError]     = useState(false);
@@ -403,8 +399,18 @@ const forcePlay = () => {
     setFinishReason(reason);
     if (faceIntervalRef.current) clearInterval(faceIntervalRef.current);
     if (timerRef.current) clearInterval(timerRef.current);
-    try { await finishTest(undefined).unwrap(); } catch { /* silent */ }
-  }, [finishTest]);
+    try { 
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/test/finish`, {
+        method: "POST",
+        headers: {
+          Accept: "*/*",
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+    
+    } catch { /* silent */ }
+  }, [jwtToken]);
 
   const checkFace = useCallback(async () => {
     if (isFinishedRef.current) return;
@@ -543,7 +549,15 @@ const forcePlay = () => {
 
   try {
     if (chatSessionId) {
-      const res: any = await initializeTest({ chatSessionId }).unwrap();
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/test/initialize`, {
+        method: "POST",
+          headers: {
+            Accept: "*/*",
+            Authorization: `Bearer ${jwtToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ chatSessionId }),
+        });
 
       // if (res) {
       //   setCamCheck('fail');
