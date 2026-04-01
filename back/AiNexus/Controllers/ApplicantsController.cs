@@ -1,3 +1,4 @@
+using AiNexus.Dtos.Applicants;
 using AiNexus.Helpers.Paginations;
 using AiNexus.Services.Applicants;
 using Library.Dtos.Applicants;
@@ -36,7 +37,7 @@ public class ApplicantsController : ControllerBase
 
     [Authorize]
     [HttpPost]
-    public async Task<PagedResponse<ApplicantDto>> GetApplicants(PaginationParameters parameters)
+    public async Task<PagedResponse<ApplicantShortDto>> GetApplicants(PaginationParameters parameters)
     {
         var res = await _applicantService.GetApplicantsAsync(parameters);
         return res;
