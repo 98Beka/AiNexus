@@ -63,7 +63,6 @@ export const applicantApi = createApi({
     body,
   }),
 }),
-
     getApplicant: builder.query<ApplicantDto, string>({
       query: (id: string) => ({
         url: id,
