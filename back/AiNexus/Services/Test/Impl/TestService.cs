@@ -8,6 +8,7 @@ using Library.Dtos.Test;
 using Library.Helpers.ApplicationExceptions;
 using Library.Helpers.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace AiNexus.Services.Test.Impl;
 
@@ -53,7 +54,9 @@ public class TestService:ITestService
         var userGuid = Guid.Parse(userId);
         var applicant = await _context.Applicants.FirstOrDefaultAsync(a=>a.Id == userGuid);
         if (applicant == null) return false;
-        var test = await _context.TestSessions.FirstOrDefaultAsync(t => t.ApplicantId == applicant.Id);
+        var test = await _context.TestSessions
+            .OrderByDescending(t => t.StartedAt)
+            .FirstOrDefaultAsync(t => t.ApplicantId == applicant.Id);
         if (test == null) return false;
         test.IsCompleted = true;
         test.FinishedAt = DateTime.Now;
@@ -70,8 +73,9 @@ public class TestService:ITestService
             Agent = AgentNameEnum.scoring_agent.ToString(),
             ChatId = test.ChatSessionId
         };
-        var res = await _flowiseService.SendMessageAsync(msgRequest);
-        test.AnalyticResult = res;
+        var result = await _flowiseService.SendMessageAsync(msgRequest);
+        test.AnalyticResult = result.Content;
+        test.Score = result.Score;
 
         _context.Update(test);
         await _context.SaveChangesAsync();
