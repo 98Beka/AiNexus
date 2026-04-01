@@ -1,5 +1,6 @@
 using AiNexus.Dtos.Test;
 using AiNexus.Enums;
+using AiNexus.Infrastructure;
 using AiNexus.Infrastructure.ChatHistory;
 using AiNexus.Infrastructure.Flowise;
 using AiNexus.Models;
@@ -15,16 +16,19 @@ public class TestService:ITestService
     private readonly IFlowiseService _flowiseService;
     private readonly AppPostgreSQLDbContext _context;
     private readonly IChatHistoryService _chatHistoryService;
+    private readonly IAgentProfileService _agentProfileService;
 
     public TestService(
         AppPostgreSQLDbContext context,
         IFlowiseService flowiseService,
-        IChatHistoryService chatHistoryService
+        IChatHistoryService chatHistoryService,
+        IAgentProfileService agentProfileService
         )
     {
         _context = context;
         _flowiseService = flowiseService;
         _chatHistoryService = chatHistoryService;
+        _agentProfileService = agentProfileService;
     }
     public async Task<bool> Initialize(TestInitRequest request, string userId)
     {
@@ -54,12 +58,15 @@ public class TestService:ITestService
         test.IsCompleted = true;
         test.FinishedAt = DateTime.Now;
 
+        var idealApplicantDescription = await _agentProfileService.GetIdealApplicantDescriptionAsync();
         var history = await _chatHistoryService.GetHistoryAsync(test.ChatSessionId);
         var historyStr = string.Join("\n", history.Select(h => $"{h.Role}: {h.Content}"));
+        var promt = $"Ideal Applicant Description: {idealApplicantDescription}" +
+            $"\n\nChat History:\n{historyStr}\n\n";
 
         var msgRequest = new FlowiseRequest()
         {
-            Message = historyStr,
+            Message = promt,
             Agent = AgentNameEnum.scoring_agent.ToString(),
             ChatId = test.ChatSessionId
         };

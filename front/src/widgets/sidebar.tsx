@@ -33,8 +33,9 @@ const LogoMark = () => (
 )
 
 const navItems = [
-    { to: '/account',    label: 'Мой аккаунт',        Icon: UserIcon },
-    { to: '/applicants', label: 'Список заявителей',   Icon: ApplicantsIcon },
+    { to: '/account', label: 'Мой аккаунт', Icon: UserIcon },
+    { to: '/applicants', label: 'Список заявителей', Icon: ApplicantsIcon },
+    { to: '/agent-setting', label: 'Настройка агентов', Icon: UserIcon },
 ]
 
 export const Sidebar = () => {

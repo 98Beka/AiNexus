@@ -77,36 +77,6 @@ export default function Header() {
     </Typography>
 
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={() => navigate('/applicant-submit')}
-        sx={{
-          textTransform: 'none',
-          borderRadius: 2,
-          px: 2,
-          color: 'white',
-          borderColor: 'rgba(255,255,255,0.3)',
-          '&:hover': { borderColor: 'rgba(255,255,255,0.7)' },
-        }}
-      >
-        Новая заявка
-      </Button>
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={() => navigate('/')}
-        sx={{
-          textTransform: 'none',
-          borderRadius: 2,
-          px: 2,
-          color: 'white',
-          borderColor: 'rgba(255,255,255,0.3)',
-          '&:hover': { borderColor: 'rgba(255,255,255,0.7)' },
-        }}
-      >
-        Заявители
-      </Button>
       <Box
         sx={{
           px: 1.8,
