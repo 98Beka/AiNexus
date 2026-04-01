@@ -23,7 +23,6 @@ function StatusBadge({ status }: { status: string }) {
           component="span"
           sx={{
             display: 'inline-block',
-            px: 1.5,
             py: 0.4,
             borderRadius: '999px',
             fontSize: '0.72rem',
@@ -97,7 +96,7 @@ export default function ApplicantsPage() {
   const totalPages = data ? Math.ceil(data.totalCount / pageSize) : 1
 
   return (
-    <Box sx={{ width: '100%', px: 2, py: 3 }}>
+    <Box sx={{ px: 8 }}>
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
         Список заявителей
       </Typography>
