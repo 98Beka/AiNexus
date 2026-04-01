@@ -1,5 +1,6 @@
 using AiNexus.Dtos.Test;
 using AiNexus.Enums;
+using AiNexus.Infrastructure.ChatHistory;
 using AiNexus.Infrastructure.Flowise;
 using AiNexus.Models;
 using Library.Dtos.Test;
@@ -13,14 +14,17 @@ public class TestService:ITestService
 {
     private readonly IFlowiseService _flowiseService;
     private readonly AppPostgreSQLDbContext _context;
+    private readonly IChatHistoryService _chatHistoryService;
 
     public TestService(
         AppPostgreSQLDbContext context,
-        IFlowiseService flowiseService
+        IFlowiseService flowiseService,
+        IChatHistoryService chatHistoryService
         )
     {
         _context = context;
         _flowiseService = flowiseService;
+        _chatHistoryService = chatHistoryService;
     }
     public async Task<bool> Initialize(TestInitRequest request, string userId)
     {
@@ -51,9 +55,12 @@ public class TestService:ITestService
         test.IsCompleted = true;
         test.FinishedAt = DateTime.Now;
 
+        var history = await _chatHistoryService.GetHistoryAsync(test.ChatSessionId);
+        var historyStr = string.Join("\n", history.Select(h => $"{h.Role}: {h.Content}"));
+
         var msgRequest = new FlowiseRequest()
         {
-            Message = "start",
+            Message = historyStr,
             Agent = AgentNameEnum.scoring_agent.ToString(),
             ChatId = test.ChatSessionId
         };
