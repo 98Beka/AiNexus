@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import type { Message } from '@/entities/chat/model/types';
+import { useDispatch } from 'react-redux';
+import { setSessionId } from '@/entities/session/model/slice';
 
 export const fetchPostSSE = async (
   url: string,
@@ -68,7 +70,8 @@ export const useChatStream = (jwtToken?: string) => {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const sessionId = useRef<string>(crypto.randomUUID());
-  //sessionSlice.sessionId = sessionId
+  const disputch = useDispatch()
+  disputch(setSessionId(sessionId.current))
   const currentStreamRef = useRef<string>('');
 
   const updateStream = useCallback((chunk: string) => {

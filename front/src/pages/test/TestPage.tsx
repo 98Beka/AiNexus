@@ -12,6 +12,7 @@ import { FinishedBanner } from './components/FinishedBanner/FinishedBanner';
 import { finishTest, initializeTest } from '@/features/test/api';
 import { useDispatch } from 'react-redux';
 import { setAccessToken } from '@/entities/session/model/slice';
+import { ChatWindow } from '@/features/chat/ui/ChatWindow';
 
 const TIMER_DURATION = 10 * 60;
 
@@ -108,51 +109,7 @@ export default function TestPage() {
           />
         )}
 
-        <div style={s.chatWrapper}>
-          <div style={s.header}>
-            <div style={s.headerLeft}>
-              <div style={{ ...s.headerDot, background: isFinished ? '#ef4444' : '#22c55e' }} />
-              <span style={s.headerTitle}>AI Интервью</span>
-            </div>
-          </div>
-
-          <div style={s.messagesArea}>
-            <div style={s.messagesInner}>
-              {messages.map((msg, i) => (
-                <div key={i} style={{ ...s.messageRow, justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                  {msg.role !== 'user' && <div style={s.aiAvatar}>AI</div>}
-                  <div style={msg.role === 'user' ? s.userBubble : s.aiBubble}>{msg.content}</div>
-                </div>
-              ))}
-              {currentStream && (
-                <div style={s.messageRow}>
-                  <div style={s.aiAvatar}>AI</div>
-                  <div style={s.aiBubble}>{currentStream}<span style={s.cursor} /></div>
-                </div>
-              )}
-              <div ref={messagesEnd} />
-            </div>
-          </div>
-
-          <div style={s.inputArea}>
-            {isFinished && <FinishedBanner reason={finishReason} />}
-            <div style={{ ...s.inputBox, opacity: isFinished ? 0.5 : 1 }}>
-              <textarea
-                ref={textareaRef}
-                style={s.textarea}
-                placeholder={isFinished ? 'Тест завершён' : 'Введите ответ...'}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-                disabled={isStreaming || isFinished}
-                rows={1}
-              />
-              <button onClick={handleSend} disabled={!input.trim() || isStreaming || isFinished} style={s.sendBtn}>
-                {isStreaming ? <CircularProgress size={14} sx={{ color: '#fff' }} /> : <SendIcon sx={{ fontSize: 15 }} />}
-              </button>
-            </div>
-          </div>
-        </div>
+        <ChatWindow/>
       </div>
 
       {/* ФИЧА КАМЕРЫ: Инкапсулирует логику слежения, драг-н-дроп и интервалы */}
