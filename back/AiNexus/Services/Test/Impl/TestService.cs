@@ -1,7 +1,9 @@
+using AiNexus.Dtos.Test;
 using AiNexus.Enums;
 using AiNexus.Infrastructure.Flowise;
 using AiNexus.Models;
 using Library.Dtos.Test;
+using Library.Helpers.ApplicationExceptions;
 using Library.Helpers.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,5 +62,16 @@ public class TestService:ITestService
         
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<int> UpdateTestScoreAsync(UpdateTestScoreRequest request)
+    {
+        var test = await _context.TestSessions.FirstOrDefaultAsync(t => t.ApplicantId == request.ApplicantId);
+        if (test == null)
+            throw new NotFoundException($"Test not found for applicant - {request.ApplicantId}");
+
+        test.Score = request.Score;
+        await _context.SaveChangesAsync();
+        return request.Score;
     }
 }
