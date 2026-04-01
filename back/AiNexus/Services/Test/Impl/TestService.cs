@@ -32,8 +32,7 @@ public class TestService:ITestService
 
         var applicant = await _context.Applicants.FirstOrDefaultAsync(a=>a.Id ==userGuid );
         if (applicant == null) return false;
-        var existingTest = await _context.TestSessions.FirstOrDefaultAsync(t => t.ApplicantId == applicant.Id);
-        if (existingTest != null) return false;
+
         var testRes = new TestSession
         {
             StartedAt =  DateTime.Now,
@@ -66,7 +65,8 @@ public class TestService:ITestService
         };
         var res = await _flowiseService.SendMessageAsync(msgRequest);
         test.AnalyticResult = res;
-        
+
+        _context.Update(test);
         await _context.SaveChangesAsync();
         return true;
     }

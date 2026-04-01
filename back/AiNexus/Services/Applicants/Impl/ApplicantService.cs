@@ -82,6 +82,7 @@ public class ApplicantService : BaseService, IApplicantService
                 Photo = a.Photo,
                 Score = _context.TestSessions
                     .Where(ts => ts.ApplicantId == a.Id)
+                    .OrderByDescending(ts => ts.FinishedAt)
                     .Select(ts => ts.Score)
                     .FirstOrDefault()
             });
@@ -111,7 +112,9 @@ public class ApplicantService : BaseService, IApplicantService
 
         var response = _mapper.Map<ApplicantDto>(applicant);
 
-        var testSession = await _context.TestSessions.FirstOrDefaultAsync(ts => ts.ApplicantId == id);
+        var testSession = await _context.TestSessions
+                                .OrderByDescending(ts => ts.FinishedAt)
+                                .FirstOrDefaultAsync(ts => ts.ApplicantId == id);
 
         if (testSession != null)
         {
