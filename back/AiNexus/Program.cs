@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json.Serialization;
 using AiNexus.Constants;
+using AiNexus.Infrastructure.ChatHistory;
 using AiNexus.Infrastructure.Email;
 using AiNexus.Infrastructure.Flowise;
 using AiNexus.Services.Applicants;
@@ -30,6 +31,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -125,6 +127,13 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
+
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(redisConnectionString!));
+
+// 2. Регистрируем наш сервис (Scoped или Transient)
+builder.Services.AddScoped<IChatHistoryService, RedisChatHistoryService>();
 
 builder.Services.AddLocalization(options =>
 {

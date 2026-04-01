@@ -14,6 +14,7 @@ export type ApplicantDto = {
   testResultDetails?: string
   temporaryToken: string
   temporaryTokenExpiresAt: string
+  photo?: string
 }
 
 export type CreateApplicantRequest = {

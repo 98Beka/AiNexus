@@ -1,4 +1,5 @@
-﻿using AiNexus.Helpers.Paginations;
+﻿using AiNexus.Dtos.Applicants;
+using AiNexus.Helpers.Paginations;
 using AiNexus.Helpers.QRCode;
 using AiNexus.Infrastructure.Email;
 using AutoMapper;
@@ -67,11 +68,23 @@ public class ApplicantService : BaseService, IApplicantService
     }
 
 
-    public async Task<PagedResponse<ApplicantDto>> GetApplicantsAsync(PaginationParameters parameters)
+    public async Task<PagedResponse<ApplicantShortDto>> GetApplicantsAsync(PaginationParameters parameters)
     {
         var query = _context.Applicants
             .OrderByDescending(x => x.CreatedAt)
-            .AsQueryable();
+            .Select(a => new ApplicantShortDto
+            {
+                Id = a.Id,
+                Name = a.Name,
+                Surname = a.Surname,
+                Patronymic = a.Patronymic,
+                Status = a.Status,
+                Photo = a.Photo,
+                Score = _context.TestSessions
+                    .Where(ts => ts.ApplicantId == a.Id)
+                    .Select(ts => ts.Score)
+                    .FirstOrDefault()
+            });
 
         var count = await query.CountAsync();
 
@@ -80,11 +93,9 @@ public class ApplicantService : BaseService, IApplicantService
             .Take(parameters.PageSize)
             .ToListAsync();
 
-        var mapped = _mapper.Map<List<ApplicantDto>>(items);
-
-        return new PagedResponse<ApplicantDto>
+        return new PagedResponse<ApplicantShortDto>
         {
-            Items = mapped,
+            Items = items,
             TotalCount = count,
             CurrentPage = parameters.PageNumber,
             PageSize = parameters.PageSize
@@ -98,7 +109,17 @@ public class ApplicantService : BaseService, IApplicantService
         if (applicant == null)
             throw new NotFoundException();
 
-        return _mapper.Map<ApplicantDto>(applicant);
+        var response = _mapper.Map<ApplicantDto>(applicant);
+
+        var testSession = await _context.TestSessions.FirstOrDefaultAsync(ts => ts.ApplicantId == id);
+
+        if (testSession != null)
+        {
+            response.Score = testSession.Score;
+            response.TestResultDetails = testSession.AnalyticResult;
+        }
+
+        return response;
     }
 
     public async Task<ApplicantDto> GetApplicantByTokenAsync(string token)

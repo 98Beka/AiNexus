@@ -1,6 +1,7 @@
 ﻿using AiNexus.Enums;
+using AiNexus.Infrastructure.ChatHistory;
 using AiNexus.Infrastructure.Flowise;
-using AiNexus.Models;
+using AiNexus.Models.ChatHistory;
 using AiNexus.Models.Chats;
 using AiNexus.Models.Models;
 using AutoMapper;
@@ -9,6 +10,7 @@ using Library.Helpers.Jwts.Impl;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using System.Text.Json;
 
 namespace AiNexus.Controllers;
@@ -20,9 +22,9 @@ public class ChatsController(
     AppPostgreSQLDbContext _context,
     DefaultJwtUtils _jwtUtils,
     IMapper _mapper,
-    IFlowiseService _flowiseService
+    IFlowiseService _flowiseService,
+    IChatHistoryService _chatHistoryService
     ) : ControllerBase {
-
 
     [AllowAnonymous]
     [HttpGet("access_token/{testToken}")]
@@ -37,11 +39,24 @@ public class ChatsController(
     }
 
     [Authorize]
+    [HttpGet("history/{sessioId}")]
+    public async Task<IActionResult> GetHistory(string sessioId) {
+        var res = await _chatHistoryService.GetHistoryAsync(sessioId);
+        return Ok(res);
+    }
+
+
+    [Authorize]
     [HttpPost("stream")]
     public async Task StreamChat([FromBody] ChatMessage message, CancellationToken cancellationToken) {
         SetupSseResponse();
+
+        var aiResponseBuilder = new StringBuilder();
+
         try {
-            var hasChunks = false;
+            var userMsg = new HistoryChatMessage("user", message.Content);
+            await _chatHistoryService.AddMessageAsync(message.SessionId, userMsg);
+
             var flowiseRequest = new FlowiseRequest {
                 Message = message.Content,
                 ChatId = message.SessionId,
@@ -50,8 +65,7 @@ public class ChatsController(
             };
 
             var stream = _flowiseService.StreamMessage(flowiseRequest);
-
-            await ProcessStreamAsync(stream, cancellationToken);
+            await ProcessStreamAsync(stream, aiResponseBuilder, cancellationToken);
 
         } catch (OperationCanceledException) {
             _logger.LogInformation("Client disconnected during chat stream.");
@@ -60,9 +74,13 @@ public class ChatsController(
             var errorData = JsonSerializer.Serialize(new { error = "An error occurred during chat generation." });
             await Response.WriteAsync($"data: {errorData}\n\n");
             await Response.Body.FlushAsync();
+        } finally {
+            if (aiResponseBuilder.Length > 0) {
+                var aiMsg = new HistoryChatMessage("assistant", aiResponseBuilder.ToString());
+                await _chatHistoryService.AddMessageAsync(message.SessionId, aiMsg);
+            }
         }
     }
-
 
     private void SetupSseResponse() {
         Response.ContentType = "text/event-stream";
@@ -70,12 +88,13 @@ public class ChatsController(
         Response.Headers.Connection = "keep-alive";
     }
 
-
-    private async Task ProcessStreamAsync(IAsyncEnumerable<string> stream, CancellationToken cancellationToken) {
+    private async Task ProcessStreamAsync(IAsyncEnumerable<string> stream, StringBuilder aiResponseBuilder, CancellationToken cancellationToken) {
         var hasChunks = false;
 
         await foreach (var chunk in stream) {
             hasChunks = true;
+            aiResponseBuilder.Append(chunk);
+
             var data = JsonSerializer.Serialize(new ChatStreamChunk(chunk, false));
             await Response.WriteAsync($"data: {data}\n\n", cancellationToken);
             await Response.Body.FlushAsync(cancellationToken);
