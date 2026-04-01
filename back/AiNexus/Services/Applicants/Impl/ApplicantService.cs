@@ -1,4 +1,5 @@
 ﻿using AiNexus.Helpers.Paginations;
+using AiNexus.Helpers.QRCode;
 using AiNexus.Infrastructure.Email;
 using AutoMapper;
 using Library.Dtos.Applicants;
@@ -133,6 +134,7 @@ public class ApplicantService : BaseService, IApplicantService
 
         var temporaryLink = $"{_appSettings.BaseUrl}/test/{applicant.TemporaryToken}";
         var expiresAtUtc = applicant.TemporaryTokenExpiresAt.ToString("dd.MM.yyyy HH:mm 'UTC'") ?? "не указано";
+        var qrBase64 = QrCodeHelper.GenerateQrCodeBase64(temporaryLink);
 
         var fullName = string.Join(" ", new[]
         {
@@ -159,10 +161,9 @@ public class ApplicantService : BaseService, IApplicantService
                         Перейти к тестированию
                     </a>
                 </p>
-                <p>
-                    Или используйте прямую ссылку:<br/>
-                    <a href='{temporaryLink}' target='_blank'>{temporaryLink}</a>
-                </p>
+
+                <p>Или отсканируйте QR-код:</p>
+                <img src='data:image/png;base64,{qrBase64}' alt='QR Code' style='width:220px;height:220px;' />
                 <p>
                     <strong>Важно:</strong> ссылка действительна до <strong>{expiresAtUtc}</strong>.
                 </p>
