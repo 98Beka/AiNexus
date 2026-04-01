@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using AiNexus.Dtos.Test;
 using AiNexus.Services.Test;
 using Library.Dtos.Test;
 using Library.Helpers.Constants;
@@ -29,6 +31,13 @@ public class TestController:Controller
     {
         var userId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
         var res = await _testService.Finished(userId); 
+        return Ok(res);
+    }
+
+    [HttpPost("update-score")]
+    public async Task<IActionResult> UpdateTestScore([Required] UpdateTestScoreRequest request)
+    {
+        var res = await _testService.UpdateTestScoreAsync(request);
         return Ok(res);
     }
 }
