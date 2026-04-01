@@ -26,6 +26,8 @@ public class TestService:ITestService
 
         var applicant = await _context.Applicants.FirstOrDefaultAsync(a=>a.Id ==userGuid );
         if (applicant == null) return false;
+        var existingTest = await _context.TestSessions.FirstOrDefaultAsync(t => t.ApplicantId == applicant.Id);
+        if (existingTest != null) return false;
         var testRes = new TestSession
         {
             StartedAt =  DateTime.Now,
