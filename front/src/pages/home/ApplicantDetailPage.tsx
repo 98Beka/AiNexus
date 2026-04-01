@@ -57,7 +57,7 @@ export default function ApplicantDetailPage() {
             sx={{
                 display: 'grid',
                 gridTemplateColumns: { xs: '1fr', md: '360px 1fr' },
-                gap: 2,
+                gap: 5,
                 p: 2,
                 alignItems: 'start',
             }}
@@ -93,15 +93,6 @@ export default function ApplicantDetailPage() {
                 <DetailRow label="Email" value={applicant.email} />
                 <DetailRow label="Телефон" value={applicant.phone} />
                 <DetailRow label="Текущий статус" value={applicant.status} />
-                <DetailRow label="Временный токен" value={applicant.temporaryToken} />
-                <DetailRow
-                    label="Срок действия токена"
-                    value={
-                        applicant.temporaryTokenExpiresAt
-                            ? new Date(applicant.temporaryTokenExpiresAt).toLocaleString()
-                            : null
-                    }
-                />
             </DetailSection>
 
             {/* Правая колонка — результат теста */}
