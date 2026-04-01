@@ -1,11 +1,15 @@
 using AiNexus.Dtos.Applicants;
 using AiNexus.Helpers.Paginations;
+using AiNexus.Infrastructure.ChatHistory;
+using AiNexus.Models.ChatHistory;
 using AiNexus.Services.Applicants;
 using Library.Dtos.Applicants;
 using Library.Helpers.Constants;
+using Library.Helpers.DbContexts;
 using Library.Helpers.Paginations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Library.Controllers;
 
@@ -15,11 +19,20 @@ public class ApplicantsController : ControllerBase
 {
     private readonly IApplicantService _applicantService;
     private readonly ILogger<ApplicantsController> _logger;
+    private readonly AppPostgreSQLDbContext _context;
+    private readonly IChatHistoryService _chatHistoryService;
 
-    public ApplicantsController(IApplicantService applicantService, ILogger<ApplicantsController> logger)
+    public ApplicantsController(
+        IApplicantService applicantService,
+        ILogger<ApplicantsController> logger,
+        AppPostgreSQLDbContext context,
+        IChatHistoryService chatHistoryService
+        )
     {
         _applicantService = applicantService;
         _logger = logger;
+        _context = context;
+        _chatHistoryService = chatHistoryService;
     }
 
     [AllowAnonymous]
@@ -41,6 +54,23 @@ public class ApplicantsController : ControllerBase
     {
         var res = await _applicantService.GetApplicantsAsync(parameters);
         return res;
+    }
+
+    [Authorize]
+    [HttpGet("history/{userId}")]
+    public async Task<IActionResult> GetHistory(string userId) {
+        var user = await _context.Applicants.Where(u => u.Id == Guid.Parse(userId)).FirstOrDefaultAsync();
+        if (user == null) {
+            return NotFound();
+        }
+        var lastSessionId = await _context.TestSessions
+            .Where(ts => ts.ApplicantId == user.Id)
+            .OrderByDescending(ts => ts.StartedAt)
+            .Select(ts => ts.ChatSessionId)
+            .FirstOrDefaultAsync();
+
+        List<HistoryChatMessage> res = await _chatHistoryService.GetHistoryAsync(lastSessionId);
+        return Ok(res);
     }
 
     [Authorize]
