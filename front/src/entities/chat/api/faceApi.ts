@@ -3,7 +3,6 @@ import { createBaseQuery } from '@/entities/shared/api/baseApi';
 
 export type DetectFaceRequest = {
     photo: string
-    id: string
 }
 
 export type DetectFaceResponse = {
@@ -20,7 +19,7 @@ export const api = createApi({
     endpoints: (builder) => ({
         detectFace: builder.mutation<DetectFaceResponse,DetectFaceRequest >({
             query: (body: DetectFaceRequest) => ({
-                url: '/api/v1/proctoring/comparison-face/',
+                url: '/api/v1/proctoring/comparison_faces',
                 method: 'POST',
                 body,
             }),

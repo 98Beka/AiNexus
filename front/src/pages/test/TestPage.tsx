@@ -13,14 +13,13 @@ type FaceStatus = 'idle' | 'checking' | 'ok' | 'no_face' | 'error';
 
 const FACE_STATUS: Record<FaceStatus, { label: string; dot: string }> = {
   idle:     { label: 'Ожидание',        dot: '#6b7280' },
-  checking: { label: 'Ожидание',        dot: '#6b7280' }, // same as idle — no flash
+  checking: { label: 'Ожидание',        dot: '#6b7280' },
   ok:       { label: 'Лицо найдено',   dot: '#22c55e' },
   no_face:  { label: 'Лицо не найдено', dot: '#ef4444' },
   error:    { label: 'Ошибка',          dot: '#ef4444' },
 };
 
-// Camera width presets
-const CAM_SIZES = [160, 220, 300, 450];
+const CAM_SIZES = [150, 225, 350];
 
 function captureFrameBase64(video: HTMLVideoElement, canvas: HTMLCanvasElement): string {
   canvas.width = video.videoWidth;
@@ -29,8 +28,6 @@ function captureFrameBase64(video: HTMLVideoElement, canvas: HTMLCanvasElement):
   return canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 }
 
-// ── Proctoring ready screen ───────────────────────────────────────────────────
-// lastFace — последний финальный результат (без 'checking'), чтобы чеклист не мигал
 function ReadyCard({ lastFace }: { lastFace: Exclude<FaceStatus, 'checking'> }) {
   const checks = [
     { label: 'Камера подключена',  ok: lastFace !== 'idle' && lastFace !== 'error' },
@@ -119,7 +116,6 @@ const rs: Record<string, React.CSSProperties> = {
   hint: { fontSize: 12, color: '#d1d5db', textAlign: 'center', margin: 0 },
 };
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
 export default function TestPage() {
   const { token } = useParams<{ token: string | undefined }>();
 
@@ -181,7 +177,7 @@ export default function TestPage() {
     setFaceStatus('checking');
     try {
       const photo = captureFrameBase64(video, canvas);
-      const hasFace = await detectFace({ photo, id: token }).unwrap();
+      const hasFace = await detectFace({ photo }).unwrap();
       const result: FaceStatus = hasFace ? 'ok' : 'no_face';
       setFaceStatus(result);
       setLastFace(result);
@@ -223,7 +219,6 @@ export default function TestPage() {
     return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
   }, []);
 
-  // ── Drag touch ───────────────────────────────────────────────────────────
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     if ((e.target as HTMLElement).closest('button')) return;
     const t = e.touches[0];
@@ -247,13 +242,45 @@ export default function TestPage() {
     return () => { window.removeEventListener('touchmove', onMove); window.removeEventListener('touchend', onEnd); };
   }, []);
 
-  // ── Send ─────────────────────────────────────────────────────────────────
+  const onBig = () => {
+  if (camSizeIdx >= CAM_SIZES.length - 1) return
+
+  const oldWidth = CAM_SIZES[camSizeIdx]
+  const newWidth = CAM_SIZES[camSizeIdx + 1]
+
+  const oldHeight = (oldWidth * 3) / 4
+  const newHeight = (newWidth * 3) / 4
+
+  let newX = pos.x
+  let newY = pos.y
+
+  if (pos.x + oldWidth > window.innerWidth) {
+    newX = pos.x - (newWidth - oldWidth)
+  }
+
+  if (pos.y + oldHeight > window.innerHeight) {
+    newY = pos.y - (newHeight - oldHeight)
+  }
+
+  const maxX = window.innerWidth - newWidth - 10
+  const maxY = window.innerHeight - newHeight
+
+  newX = Math.max(0, Math.min(newX, maxX))
+  newY = Math.max(0, Math.min(newY, maxY))
+
+  setPos({
+    x: newX,
+    y: newY,
+  })
+
+  setCamSizeIdx((i) => i + 1)
+}
+
   const handleSend = () => { if (!input.trim() || isStreaming) return; sendMessage(input); setInput(''); };
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
-  // ── Auth guards ───────────────────────────────────────────────────────────
   if (isAuthLoading) return (
     <div style={s.centered}><CircularProgress sx={{ color: '#111827' }} /></div>
   );
@@ -268,10 +295,8 @@ export default function TestPage() {
   return (
     <div style={s.root}>
 
-      {/* ── Chat ── */}
       <div style={s.chatWrapper}>
 
-        {/* Header */}
         <div style={s.header}>
           <div style={s.headerLeft}>
             <div style={s.headerDot} />
@@ -280,7 +305,6 @@ export default function TestPage() {
           {!isEmpty && <span style={s.headerCount}>{messages.length} сообщений</span>}
         </div>
 
-        {/* Messages */}
         <div style={s.messagesArea}>
           <div style={s.messagesInner}>
 
@@ -306,7 +330,6 @@ export default function TestPage() {
           </div>
         </div>
 
-        {/* Input */}
         <div style={s.inputArea}>
           <div style={s.inputBox}>
             <textarea
@@ -331,14 +354,12 @@ export default function TestPage() {
         </div>
       </div>
 
-      {/* ── Camera popup ── */}
       <div
         ref={popupRef}
         onMouseDown={onMouseDown}
         onTouchStart={onTouchStart}
         style={{ ...s.popup, left: pos.x, top: pos.y, width: camWidth }}
       >
-        {/* Video */}
         <div style={{ position: 'relative', aspectRatio: '4/3' as any, background: '#0d0d0d' }}>
           {camError ? (
             <div style={s.camError}>
@@ -353,7 +374,6 @@ export default function TestPage() {
           </div>
         </div>
 
-        {/* Footer */}
         <div style={s.popupFooter}>
           <div style={s.faceStatus}>
             <span style={{ ...s.statusDot, background: dot }} />
@@ -368,7 +388,7 @@ export default function TestPage() {
             </button>
             <button
               style={{ ...s.sizeBtn, opacity: camSizeIdx < CAM_SIZES.length - 1 ? 1 : 0.3 }}
-              onClick={() => camSizeIdx < CAM_SIZES.length - 1 && setCamSizeIdx((i) => i + 1)}
+              onClick={onBig}
             >
               <AddIcon sx={{ fontSize: 11 }} />
             </button>
@@ -394,7 +414,6 @@ export default function TestPage() {
   );
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
 const s: Record<string, React.CSSProperties> = {
   root: {
     height: '100dvh', background: '#f9fafb',

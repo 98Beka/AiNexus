@@ -22,11 +22,24 @@ export type CreateApplicantRequest = {
   patronymic?: string
   email: string
   phone?: string
+  photo?: string
 }
 
 export type TestResultRequest = {
   score: number
   testResultDetails?: string
+}
+
+export type GetApplicantsRequest = {
+  pageNumber: number
+  pageSize: number
+}
+
+export type GetApplicantsResponse = {
+  items: ApplicantDto[]
+  totalCount: number
+  currentPage: number
+  pageSize: number
 }
 
 export const applicantApi = createApi({
@@ -43,12 +56,12 @@ export const applicantApi = createApi({
       }),
     }),
     getApplicants: builder.query<GetApplicantsResponse, GetApplicantsRequest>({
-      query: (body: GetApplicantsRequest) => ({
-        url: '',
-        method: 'POST',
-        body,
-      }),
-    }),
+  query: (body) => ({
+    url: '',
+    method: 'POST',
+    body,
+  }),
+}),
 
     getApplicant: builder.query<ApplicantDto, string>({
       query: (id: string) => ({
