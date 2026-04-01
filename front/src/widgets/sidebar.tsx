@@ -32,10 +32,18 @@ const LogoMark = () => (
     </svg>
 )
 
+const AgentRobotIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="5" y="8" width="14" height="12" rx="3" />
+        <circle cx="9" cy="14" r="1" />
+        <circle cx="15" cy="14" r="1" />
+        <path d="M10 17h4" />
+    </svg>
+);
 const navItems = [
     { to: '/account', label: 'Мой аккаунт', Icon: UserIcon },
     { to: '/applicants', label: 'Список заявителей', Icon: ApplicantsIcon },
-    { to: '/agent-setting', label: 'Настройка агентов', Icon: UserIcon },
+    { to: '/agent-setting', label: 'Настройка агентов', Icon: AgentRobotIcon },
 ]
 
 export const Sidebar = () => {
