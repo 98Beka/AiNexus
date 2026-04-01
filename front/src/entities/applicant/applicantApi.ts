@@ -1,12 +1,12 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { createBaseQuery } from '../shared/api/baseApi'
 import type {
-  ApplicantDto,
   CreateApplicantRequest,
   GetApplicantsResponse,
   GetApplicantsRequest,
   TestResultRequest,
-  HistoryChatMessage
+  HistoryChatMessage,
+  ApplicantDto
 } from './type';
 
 export const applicantApi = createApi({

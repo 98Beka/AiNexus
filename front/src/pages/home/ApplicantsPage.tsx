@@ -6,8 +6,9 @@ import {
  Avatar,
 } from '@mui/material'
 import { useState } from 'react'
-import { useGetApplicantsQuery, type ApplicantDto } from '../../entities/applicant/applicantApi'
+import { useGetApplicantsQuery} from '../../entities/applicant/applicantApi'
 import { Link } from 'react-router-dom'
+import type { ApplicantDto } from '@/entities/applicant/type'
 
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {

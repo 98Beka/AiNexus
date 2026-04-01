@@ -63,7 +63,7 @@ export const CameraPopup: React.FC<CameraPopupProps> = ({ isActive, onCriticalFa
     setFaceStatus('checking');
     try {
       const photo = captureFrameBase64(video, canvas);
-      const result = await detectFace(photo, access_token);
+      const result = await detectFace(photo, access_token ?? "");
       const isFail = !result.same_person || result.num_faces_on_photo === 0;
 
       if (isFail) {

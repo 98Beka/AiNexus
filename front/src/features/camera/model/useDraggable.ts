@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback, RefObject } from 'react';
+import { useState, useEffect, useRef, useCallback, type RefObject } from 'react';
 
-export function useDraggable(popupRef: RefObject<HTMLDivElement>, initialWidth: number) {
+export function useDraggable(popupRef: RefObject<HTMLDivElement | null>, initialWidth: number) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const dragging = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
