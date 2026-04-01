@@ -78,7 +78,7 @@ public class ApplicantService : BaseService, IApplicantService
                 Name = a.Name,
                 Surname = a.Surname,
                 Patronymic = a.Patronymic,
-                Email = a.Email,
+                Status = a.Status,
                 Score = _context.TestSessions
                     .Where(ts => ts.ApplicantId == a.Id)
                     .Select(ts => ts.Score)
