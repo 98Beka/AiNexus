@@ -1,47 +1,31 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CircularProgress } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
 import { useParams } from 'react-router-dom';
 import { styles as s } from './styles';
 import { useGetAccessTokenQuery } from '@/entities/chat/api/chatApi';
-import { useChatStream } from '@/features/chat/lib/useChatStream';
 import { TestTimerPanel } from '@/features/test_timer';
 import { CameraPopup } from '@/features/camera';
 import { IntroModal } from './components/IntroModal/IntroModal';
-import { FinishedBanner } from './components/FinishedBanner/FinishedBanner';
 import { finishTest, initializeTest } from '@/features/test/api';
 import { useDispatch } from 'react-redux';
-import { setAccessToken } from '@/entities/session/model/slice';
+import { setAccessToken, setSessionId } from '@/entities/session/model/slice';
 import { ChatWindow } from '@/features/chat/ui/ChatWindow';
 
 const TIMER_DURATION = 10 * 60;
 
 export default function TestPage() {
-  const [input, setInput] = useState('');
   const [showIntro, setShowIntro] = useState(true);
   const [isStarting, setIsStarting] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const [finishReason, setFinishReason] = useState('');
   const isFinishedRef = useRef(false);
-  const messagesEnd = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const modalVideoRef = useRef<HTMLVideoElement>(null);
 
   const { token } = useParams<{ token: string }>();
   const { data: access_token, isLoading: isAuthLoading, isError } = useGetAccessTokenQuery(token as any, { skip: !token });
   const dispatch = useDispatch();
   dispatch(setAccessToken(access_token))
-  const { messages, currentStream, isStreaming, sendMessage } = useChatStream(access_token);
-
-  // Auto-scroll
-  useEffect(() => { messagesEnd.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, currentStream]);
-
-  // Textarea height
-  useEffect(() => {
-    const el = textareaRef.current; if (!el) return;
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 160) + 'px';
-  }, [input]);
+  const sessionId = useRef<string>(crypto.randomUUID());
+  dispatch(setSessionId(sessionId.current))
 
   // Камера для модалки (превью)
   useEffect(() => {
@@ -51,11 +35,10 @@ export default function TestPage() {
     }).catch(() => { });
   }, [showIntro]);
 
-  const handleFinish = useCallback(async (reason: string) => {
+  const handleFinish = useCallback(async () => {
     if (isFinishedRef.current) return;
     isFinishedRef.current = true;
     setIsFinished(true);
-    setFinishReason(reason);
     try {
       await finishTest(access_token)
     } catch { /* silent */ }
@@ -64,18 +47,12 @@ export default function TestPage() {
   const handleStart = async () => {
     setIsStarting(true);
     try {
-      await initializeTest(access_token)
+      await initializeTest(access_token, sessionId.current)
       setShowIntro(false);
     } catch {
 
     }
     setIsStarting(false);
-  };
-
-  const handleSend = () => {
-    if (!input.trim() || isStreaming || isFinished) return;
-    sendMessage(input);
-    setInput('');
   };
 
   if (isAuthLoading) return <div style={s.centered}><CircularProgress sx={{ color: '#111827' }} /></div>;
@@ -104,8 +81,8 @@ export default function TestPage() {
             duration={TIMER_DURATION}
             isActive={!isFinished}
             isFinished={isFinished}
-            onTimeUp={() => handleFinish('Время вышло. Тест завершён автоматически.')}
-            onManualFinish={() => handleFinish('Тест завершён вручную.')}
+            onTimeUp={() => handleFinish()}
+            onManualFinish={() => handleFinish()}
           />
         )}
 

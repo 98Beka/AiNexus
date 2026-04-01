@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import type { Message } from '@/entities/chat/model/types';
-import { useDispatch } from 'react-redux';
-import { setSessionId } from '@/entities/session/model/slice';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/app/store';
 
 export const fetchPostSSE = async (
   url: string,
@@ -68,10 +68,6 @@ export const useChatStream = (jwtToken?: string) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentStream, setCurrentStream] = useState<string>('');
   const [isStreaming, setIsStreaming] = useState(false);
-
-  const sessionId = useRef<string>(crypto.randomUUID());
-  const disputch = useDispatch()
-  disputch(setSessionId(sessionId.current))
   const currentStreamRef = useRef<string>('');
 
   const updateStream = useCallback((chunk: string) => {
@@ -101,6 +97,8 @@ export const useChatStream = (jwtToken?: string) => {
   const sendMessage = useCallback(async (content: string) => {
     if (!jwtToken || !content.trim()) return;
 
+    const sessionId = useSelector((state:RootState) => state.session.sessionId)
+
     setMessages((prev) => [
       ...prev,
       { id: crypto.randomUUID(), role: 'user', content },
@@ -111,7 +109,7 @@ export const useChatStream = (jwtToken?: string) => {
 
     await fetchPostSSE(
       `${import.meta.env.VITE_API_BASE_URL}/api/Chats/stream`,
-      { sessionId: sessionId.current, content },
+      { sessionId: sessionId, content },
       jwtToken,
       updateStream,
       () => {
