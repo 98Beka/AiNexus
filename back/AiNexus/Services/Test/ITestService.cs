@@ -7,5 +7,5 @@ public interface ITestService
 {
     Task<bool> Initialize(TestInitRequest request,string userId);
     Task<bool> Finished(string userId);
-    Task<int> UpdateTestScoreAsync(UpdateTestScoreRequest request);
+    Task<UpdateTestScoreResponse> UpdateTestScoreAsync(UpdateTestScoreRequest request);
 }

@@ -13,6 +13,6 @@ public class ApplicantDto
     public string Status { get; set; }
     public int? Score { get; set; }
     public string? TestResultDetails { get; set; }
-    public string TemporaryToken { get; set; }
-    public DateTime TemporaryTokenExpiresAt { get; set; }
+    public int? EditScore { get; set; }
+    public string? EditReason { get; set; }
 }

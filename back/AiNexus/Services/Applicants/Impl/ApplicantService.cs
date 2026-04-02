@@ -117,6 +117,8 @@ public class ApplicantService : BaseService, IApplicantService
         {
             response.Score = testSession.Score;
             response.TestResultDetails = testSession.AnalyticResult;
+            response.EditScore = testSession.EditScore;
+            response.EditReason = testSession.EditReason;
         }
 
         return response;

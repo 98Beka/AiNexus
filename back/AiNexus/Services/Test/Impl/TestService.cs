@@ -64,14 +64,20 @@ public class TestService:ITestService
         return true;
     }
 
-    public async Task<int> UpdateTestScoreAsync(UpdateTestScoreRequest request)
+    public async Task<UpdateTestScoreResponse> UpdateTestScoreAsync(UpdateTestScoreRequest request)
     {
         var test = await _context.TestSessions.FirstOrDefaultAsync(t => t.ApplicantId == request.ApplicantId);
         if (test == null)
             throw new NotFoundException($"Test not found for applicant - {request.ApplicantId}");
 
-        test.Score = request.Score;
+        test.EditScore = request.EditScore;
+        test.EditReason = request.EditReason;
         await _context.SaveChangesAsync();
-        return request.Score;
+        return new UpdateTestScoreResponse() { 
+            ApplicantId = test.ApplicantId,
+            Score = test.Score,
+            EditScore = request.EditScore,
+            EditReason = request.EditReason
+        };
     }
 }
