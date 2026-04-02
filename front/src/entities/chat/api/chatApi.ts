@@ -21,4 +21,4 @@ export const chatApi = createApi({
   }),
 });
 
-export const { useGetAccessTokenQuery, useInitializeTestMutation, useFinishTestMutation } = chatApi;
+export const { useGetAccessTokenQuery} = chatApi;

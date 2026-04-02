@@ -82,6 +82,7 @@ public class ApplicantService : BaseService, IApplicantService
                 Photo = a.Photo,
                 Score = _context.TestSessions
                     .Where(ts => ts.ApplicantId == a.Id)
+                    .OrderByDescending(ts => ts.FinishedAt)
                     .Select(ts => ts.Score)
                     .FirstOrDefault()
             });
@@ -111,7 +112,9 @@ public class ApplicantService : BaseService, IApplicantService
 
         var response = _mapper.Map<ApplicantDto>(applicant);
 
-        var testSession = await _context.TestSessions.FirstOrDefaultAsync(ts => ts.ApplicantId == id);
+        var testSession = await _context.TestSessions
+                                .OrderByDescending(ts => ts.FinishedAt)
+                                .FirstOrDefaultAsync(ts => ts.ApplicantId == id);
 
         if (testSession != null)
         {
@@ -156,6 +159,7 @@ public class ApplicantService : BaseService, IApplicantService
         var temporaryLink = $"{_appSettings.BaseUrl}/test/{applicant.TemporaryToken}";
         var expiresAtUtc = applicant.TemporaryTokenExpiresAt.ToString("dd.MM.yyyy HH:mm 'UTC'") ?? "не указано";
         var qrBase64 = QrCodeHelper.GenerateQrCodeBase64(temporaryLink);
+        var qrBytes = Convert.FromBase64String(qrBase64);
 
         var fullName = string.Join(" ", new[]
         {
@@ -184,7 +188,7 @@ public class ApplicantService : BaseService, IApplicantService
                 </p>
 
                 <p>Или отсканируйте QR-код:</p>
-                <img src='data:image/png;base64,{qrBase64}' alt='QR Code' style='width:220px;height:220px;' />
+                <img src='cid:qrcode' alt='QR Code' style='width:220px;height:220px;' />
                 <p>
                     <strong>Важно:</strong> ссылка действительна до <strong>{expiresAtUtc}</strong>.
                 </p>
@@ -200,7 +204,9 @@ public class ApplicantService : BaseService, IApplicantService
             applicant.Email,
             fullName,
             subject,
-            htmlBody
+            htmlBody,
+            qrBytes,
+            "qrcode"
         );
     }
 }
