@@ -78,6 +78,7 @@ public class ApplicantService : BaseService, IApplicantService
                 Name = a.Name,
                 Surname = a.Surname,
                 Patronymic = a.Patronymic,
+                Email = a.Email,
                 Status = a.Status,
                 Photo = a.Photo,
                 Score = _context.TestSessions
