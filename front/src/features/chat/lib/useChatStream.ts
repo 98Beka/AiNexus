@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import type { Message } from '@/entities/chat/model/types';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/app/store';
+import { generateId } from '@/shared/utils/const';
 
 export const fetchPostSSE = async (
   url: string,
@@ -89,7 +90,7 @@ export const useChatStream = (jwtToken?: string) => {
 
     setMessages((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), role: 'assistant', content },
+      { id: generateId(), role: 'assistant', content },
     ]);
     resetStream();
   }, [resetStream]);
@@ -101,7 +102,7 @@ export const useChatStream = (jwtToken?: string) => {
 
     setMessages((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), role: 'user', content },
+      { id: generateId(), role: 'user', content },
     ]);
 
     setIsStreaming(true);

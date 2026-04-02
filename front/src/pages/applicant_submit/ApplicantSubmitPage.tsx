@@ -273,7 +273,6 @@ export default function ApplicantSubmitPage() {
         </div>
       </div>
 
-      {/* ── Camera Dialog (логика из v1) ── */}
       <Dialog open={openCameraDialog} onClose={handleCloseCameraDialog} maxWidth="md" fullWidth>
         <DialogTitle sx={{ fontWeight: 700 }}>
           Сделать фото
