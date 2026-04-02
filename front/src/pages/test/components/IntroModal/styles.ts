@@ -4,7 +4,7 @@ export const styles: Record<string, CSSProperties> = {
   overlay: { position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(6px)' },
   card: { background: '#fff', borderRadius: 20, padding: 32, maxWidth: 460, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 },
   iconWrap: { width: 56, height: 56, borderRadius: '50%', background: '#f9fafb', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 20, fontWeight: 800 },
+  title: { fontSize: 20, fontWeight: 800, color: '#111827' },
   sub: { fontSize: 13, color: '#6b7280', textAlign: 'center' },
   infoBlock: { width: '100%', background: '#f9fafb', borderRadius: 12, padding: 12, display: 'flex', flexDirection: 'column', gap: 10 },
   infoRow: { display: 'flex', gap: 10 },

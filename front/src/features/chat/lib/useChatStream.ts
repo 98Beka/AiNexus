@@ -123,5 +123,5 @@ export const useChatStream = (jwtToken?: string) => {
     );
   }, [jwtToken, updateStream, commitAssistantMessage, resetStream]);
 
-  return { messages, currentStream, isStreaming, sendMessage, sessionId };
+  return { messages, currentStream, isStreaming, sendMessage};
 };
