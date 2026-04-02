@@ -12,7 +12,7 @@ export const chatApi = createApi({
         url: `/api/Chats/access_token/${testToken}`
       }),
     }),
-    initializeTest: builder.mutation<void, { chatSessionId: string }>({
+    initializeTest: builder.mutation<void, { chatSessionId: any }>({
       query: (body) => ({ url: '/api/v1/test/initialize', method: 'POST', body }),
     }),
     finishTest: builder.mutation<void, undefined>({

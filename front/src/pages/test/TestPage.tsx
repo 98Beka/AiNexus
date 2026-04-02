@@ -64,8 +64,8 @@ function IntroModal({
 }: {
   onStart: () => void;
   isStarting: boolean;
-  videoRef: React.RefObject<HTMLVideoElement>;
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  videoRef: React.RefObject<HTMLVideoElement> | any;
+  canvasRef: React.RefObject<HTMLCanvasElement> | any;
   camCheck: CamCheck;
   onCheckCam: () => void;
 }) {
@@ -295,7 +295,7 @@ export default function TestPage() {
   const { token } = useParams<{ token: string | undefined }>();
 
   const { data: jwtToken, isLoading: isAuthLoading, isError } = useGetAccessTokenQuery(token as any, { skip: !token });
-  const { messages, currentStream, isStreaming, sendMessage } = useChatStream(jwtToken);
+  const { messages, currentStream, isStreaming, sendMessage, sessionId } = useChatStream(jwtToken);
 
   const [initializeTest] = useInitializeTestMutation();
   const [finishTest]     = useFinishTestMutation();
@@ -536,14 +536,13 @@ const forcePlay = () => {
   }
 }, [jwtToken])
 
-  const chatSessionId = 'sadsa'
 
   const handleStart = async () => {
   setIsStarting(true);
 
   try {
-    if (chatSessionId) {
-      const res: any = await initializeTest({ chatSessionId }).unwrap();
+    if (sessionId) {
+      const res: any = await initializeTest({ chatSessionId: sessionId }).unwrap();
 
       // if (res) {
       //   setCamCheck('fail');
