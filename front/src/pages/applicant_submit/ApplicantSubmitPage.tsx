@@ -174,7 +174,7 @@ export default function ApplicantSubmitPage() {
         @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
       `}</style>
       
-       <p onClick={() => navigate('/auth')} style={{ position: "fixed", top: 15, right: 20, color:"lightgray", cursor: 'pointer',  }}>
+       <p onClick={() => navigate('/auth')} style={{ position: "fixed", top: 15, right: 20, color:"lightgray", cursor: 'pointer' }}>
               войти как админ
             </p>
 
