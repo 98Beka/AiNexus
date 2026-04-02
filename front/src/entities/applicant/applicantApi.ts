@@ -1,47 +1,13 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { createBaseQuery } from '../shared/api/baseApi'
-
-export type ApplicantDto = {
-  id: string
-  name: string
-  surname: string
-  patronymic?: string
-  email: string
-  phone?: string
-  createdAt: string
-  status: string
-  score?: number
-  testResultDetails?: string
-  temporaryToken: string
-  temporaryTokenExpiresAt: string
-  photo?: string
-}
-
-export type CreateApplicantRequest = {
-  name: string
-  surname: string
-  patronymic?: string
-  email: string
-  phone?: string
-  photo?: string
-}
-
-export type TestResultRequest = {
-  score: number
-  testResultDetails?: string
-}
-
-export type GetApplicantsRequest = {
-  pageNumber: number
-  pageSize: number
-}
-
-export type GetApplicantsResponse = {
-  items: ApplicantDto[]
-  totalCount: number
-  currentPage: number
-  pageSize: number
-}
+import type {
+  CreateApplicantRequest,
+  GetApplicantsResponse,
+  GetApplicantsRequest,
+  TestResultRequest,
+  HistoryChatMessage,
+  ApplicantDto
+} from './type';
 
 export const applicantApi = createApi({
   reducerPath: 'applicantApi',
@@ -57,15 +23,21 @@ export const applicantApi = createApi({
       }),
     }),
     getApplicants: builder.query<GetApplicantsResponse, GetApplicantsRequest>({
-  query: (body) => ({
-    url: '',
-    method: 'POST',
-    body,
-  }),
-}),
+      query: (body) => ({
+        url: '',
+        method: 'POST',
+        body,
+      }),
+    }),
     getApplicant: builder.query<ApplicantDto, string>({
       query: (id: string) => ({
         url: id,
+        method: 'GET',
+      }),
+    }),
+    getHistory: builder.query<HistoryChatMessage[], string>({
+      query: (userId: string) => ({
+        url: `history/${userId}`,
         method: 'GET',
       }),
     }),
@@ -91,4 +63,5 @@ export const {
   useGetApplicantQuery,
   useGetApplicantByTokenQuery,
   useUpdateApplicantTestMutation,
+  useGetHistoryQuery
 } = applicantApi

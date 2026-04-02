@@ -8,7 +8,7 @@ export default function ProtectedRoute() {
 
   if (authStatus === 'idle') {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', width:'100%', alignItems: 'center', height: '100vh' }}>
         <CircularProgress />
       </Box>
     )

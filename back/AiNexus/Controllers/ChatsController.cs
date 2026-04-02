@@ -38,13 +38,6 @@ public class ChatsController(
         return Ok(accessToken);
     }
 
-    [Authorize]
-    [HttpGet("history/{sessioId}")]
-    public async Task<IActionResult> GetHistory(string sessioId) {
-        var res = await _chatHistoryService.GetHistoryAsync(sessioId);
-        return Ok(res);
-    }
-
 
     [Authorize]
     [HttpPost("stream")]

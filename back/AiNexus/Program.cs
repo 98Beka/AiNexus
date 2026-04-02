@@ -1,8 +1,6 @@
 
-using System.Globalization;
-using System.Text;
-using System.Text.Json.Serialization;
 using AiNexus.Constants;
+using AiNexus.Infrastructure;
 using AiNexus.Infrastructure.ChatHistory;
 using AiNexus.Infrastructure.Email;
 using AiNexus.Infrastructure.Flowise;
@@ -32,6 +30,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
+using System.Globalization;
+using System.Text;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,6 +79,8 @@ builder.Services.AddScoped<IJwtUtils, DefaultJwtUtils>();
 builder.Services.AddScoped<IAccountService, DefaultAccountService>();
 builder.Services.AddHttpClient<IFlowiseService, FlowiseService>();
 builder.Services.AddScoped<DefaultJwtUtils, DefaultJwtUtils>();
+builder.Services.AddScoped<IAgentProfileService, AgentProfileService>();
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<EmailApiSettings>(

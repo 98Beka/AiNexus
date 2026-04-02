@@ -9,6 +9,7 @@ import ApplicantsPage from "../pages/home/ApplicantsPage.tsx";
 import AccountPage from "../pages/account/AccountPage.tsx";
 import TestPage from '../pages/test/TestPage'
 import ApplicantSubmitPage from '../pages/applicant_submit/ApplicantSubmitPage'
+import { AgentSettingPage } from '@/pages/agent_setting/AgentSettingPage.tsx'
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
           {
             path: '/',
             element: <HomePage />,
+          },
+          {
+            path: '/agent-setting',
+            element: <AgentSettingPage/>
           },
           {
             path: '/applicant/:id',

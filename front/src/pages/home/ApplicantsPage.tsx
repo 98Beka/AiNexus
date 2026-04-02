@@ -6,8 +6,9 @@ import {
  Avatar,
 } from '@mui/material'
 import { useState } from 'react'
-import { useGetApplicantsQuery, type ApplicantDto } from '../../entities/applicant/applicantApi'
+import { useGetApplicantsQuery} from '../../entities/applicant/applicantApi'
 import { Link } from 'react-router-dom'
+import type { ApplicantDto } from '@/entities/applicant/type'
 
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -23,7 +24,6 @@ function StatusBadge({ status }: { status: string }) {
           component="span"
           sx={{
             display: 'inline-block',
-            px: 1.5,
             py: 0.4,
             borderRadius: '999px',
             fontSize: '0.72rem',
@@ -97,7 +97,7 @@ export default function ApplicantsPage() {
   const totalPages = data ? Math.ceil(data.totalCount / pageSize) : 1
 
   return (
-    <Box sx={{ width: '100%', px: 2, py: 3 }}>
+    <Box sx={{ px: 8 }}>
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
         Список заявителей
       </Typography>

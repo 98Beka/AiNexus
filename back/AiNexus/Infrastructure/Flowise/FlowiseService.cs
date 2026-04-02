@@ -1,5 +1,6 @@
 ﻿namespace AiNexus.Infrastructure.Flowise;
 
+using AiNexus.Models.Test;
 using MathNet.Numerics.Providers.LinearAlgebra;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
@@ -8,7 +9,7 @@ using System.Text.Json;
 
 public interface IFlowiseService {
     IAsyncEnumerable<string> StreamMessage(FlowiseRequest flowise_request);
-    Task<string> SendMessageAsync(FlowiseRequest flowise_request);
+    Task<EvaluationResult> SendMessageAsync(FlowiseRequest flowise_request);
 }
 
 public class FlowiseService(
@@ -17,15 +18,20 @@ public class FlowiseService(
     ILogger<FlowiseService> _logger
     ) : IFlowiseService {
 
-    public async Task<string> SendMessageAsync(FlowiseRequest flowise_request) {
+
+    public async Task<EvaluationResult> SendMessageAsync(FlowiseRequest flowise_request) {
         var flowiseUrl = _configuration["Flowise:ApiUrl"];
         var apiKey = _configuration["Flowise:ApiKey"];
+
+        // Инициализируем пустой результат на случай ошибки
+        var res = new EvaluationResult();
 
         if (string.IsNullOrEmpty(flowiseUrl)) {
             throw new InvalidOperationException("Flowise API URL is missing in configuration.");
         }
 
-        var form = new Dictionary<string, object> {
+        var form = new Dictionary<string, object>
+        {
             { "message", flowise_request.Message },
             { "agent", flowise_request.Agent }
         };
@@ -33,7 +39,7 @@ public class FlowiseService(
         var payload = new Dictionary<string, object>
         {
             { "form", form },
-            { "chatId", flowise_request.ChatId },
+            { "chatId", flowise_request.ChatId ?? Guid.NewGuid().ToString() }, // Генерируем новый chatId, если он не предоставлен
             { "streaming", false }
         };
 
@@ -55,17 +61,40 @@ public class FlowiseService(
         }
 
         try {
+            // Используем System.Text.Json для парсинга
             using var doc = JsonDocument.Parse(responseContent);
             var root = doc.RootElement;
 
-            if (root.TryGetProperty("text", out var textElement)) {
-                return textElement.GetString() ?? string.Empty;
+            // 1. Находим массив `agentFlowExecutedData`
+            if (root.TryGetProperty("agentFlowExecutedData", out var executedData) && executedData.ValueKind == JsonValueKind.Array) {
+                foreach (var node in executedData.EnumerateArray()) {
+                    if (node.TryGetProperty("nodeLabel", out var nodeLabel) && nodeLabel.GetString() == "Scoring agent") {
+                        if (node.TryGetProperty("data", out var nodeData)) {
+                            if (nodeData.TryGetProperty("output", out var output)) {
+                                // Извлекаем числовую оценку
+                                if (output.TryGetProperty("score", out var scoreElement) && scoreElement.ValueKind == JsonValueKind.Number) {
+                                    res.Score = scoreElement.GetInt32(); // Убедитесь, что в EvaluationResult есть свойство Score
+                                }
+
+                                // Извлекаем развернутый текст
+                                if (output.TryGetProperty("content", out var contentElement) && contentElement.ValueKind == JsonValueKind.String) {
+                                    res.Content = contentElement.GetString(); // Убедитесь, что в EvaluationResult есть свойство Content
+                                }
+                            }
+
+                        }
+                        break; // Нужный агент найден, прерываем цикл
+                    }
+                }
             }
-            _logger.LogWarning("Flowise response did not contain 'text' property. Returning raw content.");
-            return responseContent;
+
+            return res; // Возвращаем заполненный или пустой объект res
         } catch (JsonException ex) {
-            _logger.LogWarning(ex, "Failed to parse non-streaming JSON from Flowise. Returning raw content.");
-            return responseContent;
+            _logger.LogWarning(ex, "Failed to parse Flowise response. Returning empty result. Response Body: {ResponseBody}", responseContent);
+            return res; // В случае ошибки парсинга возвращаем пустой результат
+        } catch (Exception ex) {
+            _logger.LogError(ex, "An unexpected error occurred while processing Flowise response.");
+            throw; // Перебрасываем неизвестное исключение
         }
     }
 

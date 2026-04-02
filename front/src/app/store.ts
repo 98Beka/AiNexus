@@ -5,7 +5,7 @@ import { authApi } from '../entities/auth/authApi'
 import { applicantApi } from '../entities/applicant/applicantApi'
 import { chatApi } from '@/entities/chat/api/chatApi';
 import chatReducer from '@/entities/chat/model/slice';
-import { sessionReducer } from '@/entities/session';
+import { sessionReducer } from '@/entities/session/model/slice';
 
 export const store = configureStore({
   reducer: {
