@@ -174,9 +174,9 @@ export default function ApplicantSubmitPage() {
         @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
       `}</style>
       
-       <button onClick={() => navigate('/auth')} type="submit" disabled={isLoading} style={{ ...p.submit, position: "fixed", top: 10, right: 10, width: 200 }}>
-              Войти как админ
-            </button>
+       <p onClick={() => navigate('/auth')} style={{ position: "fixed", top: 15, right: 20, color:"lightgray", cursor: 'pointer',  }}>
+              войти как админ
+            </p>
 
       <div style={p.blob1} /><div style={p.blob2} />
 

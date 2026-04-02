@@ -46,14 +46,12 @@ export default function TestPage() {
     }
   }, [access_token]);
 
-  const [alreadyTaken, setAlreadyTaken] = useState(false);
-
 const handleStart = async () => {
   setIsStarting(true);
   try {
     const success = await initializeTest(access_token, sessionId.current);
     if (!success) {
-      setAlreadyTaken(true);
+      setShowFinishModal(true);
     } else {
       setShowIntro(false);
     }

@@ -1,6 +1,6 @@
 import { CircularProgress } from '@mui/material';
 
-export type FinishReason = 'banned' | 'timeout' | 'manual';
+export type FinishReason = "taken" | 'banned' | 'timeout' | 'manual';
 
 interface FinishModalProps {
   reason: FinishReason;
@@ -61,6 +61,16 @@ const CONTENT: Record<FinishReason, {
     badgeColor: '#15803d',
     badgeText: 'Отправлено',
   },
+  taken: {
+  icon: <span>🔒</span>,
+  iconBg: '#fef3c7',
+  iconColor: '#d97706',
+  title: 'Тест уже пройден',
+  subtitle: 'Вы уже проходили это интервью. Повторное прохождение недоступно.',
+  badgeBg: '#fef3c7',
+  badgeColor: '#d97706',
+  badgeText: 'Недоступно',
+},
 };
 
 export function FinishModal({ reason, isSubmitting = false }: FinishModalProps) {
