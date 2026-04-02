@@ -143,7 +143,6 @@ export function IntroModal({ onStart, isStarting }: IntroModalProps) {
         <button
           style={{ ...styles.btn, opacity: (!camOk || isStarting) ? 0.45 : 1 }}
           onClick={onStart}
-
         >
           {isStarting ? 'Запуск...' : 'Начать тест →'}
         </button>

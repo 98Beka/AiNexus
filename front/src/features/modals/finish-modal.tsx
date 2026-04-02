@@ -94,20 +94,27 @@ export function FinishModal({ reason, isSubmitting = false }: FinishModalProps) 
         <div style={mo.divider} />
 
         <div style={mo.statusRow}>
-          {isSubmitting ? (
-            <>
-              <CircularProgress size={14} sx={{ color: '#6b7280' }} />
-              <span style={mo.statusText}>Отправляем результаты...</span>
-            </>
-          ) : (
-            <>
-              <div style={{ ...mo.dot, background: reason === 'banned' ? '#ef4444' : '#22c55e' }} />
-              <span style={mo.statusText}>
-                {reason === 'banned' ? 'Тест аннулирован' : 'Результаты отправлены'}
-              </span>
-            </>
-          )}
-        </div>
+  {isSubmitting ? (
+    <>
+      <CircularProgress size={14} sx={{ color: '#6b7280' }} />
+      <span style={mo.statusText}>Отправляем результаты...</span>
+    </>
+  ) : (
+    <>
+      <div style={{
+        ...mo.dot,
+        background: reason === 'banned' ? '#ef4444'
+          : reason === 'taken' ? '#d97706'
+          : '#22c55e'
+      }} />
+      <span style={mo.statusText}>
+        {reason === 'banned' ? 'Тест аннулирован'
+          : reason === 'taken' ? 'Повторное прохождение недоступно'
+          : 'Результаты отправлены'}
+      </span>
+    </>
+  )}
+</div>
 
         {reason === 'banned' && (
           <p style={mo.note}>

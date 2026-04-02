@@ -51,8 +51,10 @@ const handleStart = async () => {
   try {
     const success = await initializeTest(access_token, sessionId.current);
     if (!success) {
-      setShowFinishModal(true);
-    } else {
+  setFinishReason('taken');
+  setShowFinishModal(true);
+  setShowIntro(false);
+} else {
       setShowIntro(false);
     }
   } catch { }
