@@ -35,7 +35,7 @@ export const CameraPopup: React.FC<CameraPopupProps> = ({ isActive, onCriticalFa
     let active = true;
     const startCamera = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        const stream = await navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'user' } });
         if (!active) { stream.getTracks().forEach(t => t.stop()); return; }
         streamRef.current = stream;
         if (videoRef.current) {

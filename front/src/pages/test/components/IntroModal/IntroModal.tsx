@@ -65,7 +65,7 @@ export function IntroModal({ onStart, isStarting }: IntroModalProps) {
   useEffect(() => {
     let stream: MediaStream | null = null;
 
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator?.mediaDevices?.getUserMedia({ video: true })
       .then(s => {
         stream = s;
         if (videoRef.current) {
