@@ -5,7 +5,6 @@ import { styles } from './styles';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/app/store';
 
-// Определяем пропсы для большей ясности
 interface IntroModalProps {
   onStart: () => void;
   isStarting: boolean;
