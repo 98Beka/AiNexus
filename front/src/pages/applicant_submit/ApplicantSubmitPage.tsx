@@ -4,6 +4,7 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import CloseIcon from '@mui/icons-material/Close';
 import { useCreateApplicantMutation } from '../../entities/applicant/applicantApi';
+import { useNavigate } from 'react-router-dom';
 
 function formatPhone(raw: string): string {
   const digits = raw.replace(/\D/g, '').slice(0, 12);
@@ -54,6 +55,7 @@ const f: Record<string, React.CSSProperties> = {
 };
 
 export default function ApplicantSubmitPage() {
+  const navigate = useNavigate()
   const [form, setForm] = useState({ name: '', surname: '', patronymic: '', email: '' });
   const [phone, setPhone]               = useState('');
   const [photoPreview, setPhoto]        = useState<string | null>(null);
@@ -171,6 +173,10 @@ export default function ApplicantSubmitPage() {
         input::placeholder{color:#9ca3af}
         @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
       `}</style>
+      
+       <button onClick={() => navigate('/auth')} type="submit" disabled={isLoading} style={{ ...p.submit, position: "fixed", top: 10, right: 10, width: 200 }}>
+              Войти как админ
+            </button>
 
       <div style={p.blob1} /><div style={p.blob2} />
 
@@ -214,7 +220,6 @@ export default function ApplicantSubmitPage() {
 
             <Field label="Email" value={form.email} onChange={set('email')} type="email" required placeholder="you@example.com" />
 
-            {/* Phone */}
             <div style={f.wrap}>
               <label style={f.label}>Телефон</label>
               <input
@@ -226,7 +231,6 @@ export default function ApplicantSubmitPage() {
               />
             </div>
 
-            {/* Photo */}
             <div style={f.wrap}>
               <label style={f.label}>Фото профиля</label>
               <input
@@ -308,7 +312,6 @@ export default function ApplicantSubmitPage() {
   );
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
 const p: Record<string, React.CSSProperties> = {
   page: {
     minHeight: '100vh', background: '#080810',

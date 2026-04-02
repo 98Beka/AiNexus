@@ -15,7 +15,7 @@ export default function ProtectedRoute() {
   }
 
   if (authStatus !== 'authenticated') {
-    return <Navigate to="/auth" replace />
+    return <Navigate to="/applicant-submit" replace />
   }
 
   return <Outlet />
