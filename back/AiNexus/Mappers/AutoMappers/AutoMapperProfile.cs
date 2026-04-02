@@ -22,9 +22,7 @@ public class AutoMapperProfile : Profile
         CreateMap<Account, MyAccountInfo>()
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
 
-        CreateMap<Applicant, Dtos.Applicants.ApplicantDto>()
-            .ForMember(dest => dest.TemporaryToken, opt => opt.MapFrom(src => src.TemporaryToken))
-            .ForMember(dest => dest.TemporaryTokenExpiresAt, opt => opt.MapFrom(src => src.TemporaryTokenExpiresAt));
+        CreateMap<Applicant, Dtos.Applicants.ApplicantDto>();
 
         CreateMap<UpdateAccountRequest, Account>().ReverseMap();
     }
