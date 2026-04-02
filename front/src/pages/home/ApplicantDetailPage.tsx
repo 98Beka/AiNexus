@@ -346,7 +346,8 @@ export default function ApplicantDetailPage() {
                     )}
                 </Card>
                 {/* Форма редактирования */}
-                {editOpen && tab===0 && (
+                {applicant.editReason && editOpen===false ? (
+                    // Если есть причина редактирования — показываем readonly блок
                     <Card
                         sx={{
                             p: 2,
@@ -367,62 +368,115 @@ export default function ApplicantDetailPage() {
                                 border: '1px solid',
                                 borderColor: 'divider',
                                 bgcolor: '#fafafa',
-                                width: '100%', // важно
+                                width: '100%',
                             }}
                         >
                             <Typography variant="body2" fontWeight={600}>
-                                Изменение балла
+                                Причина изменения балла
                             </Typography>
-
-                            <TextField
-                                label="Новый балл"
-                                type="number"
-                                size="small"
-                                value={newScore}
-                                onChange={(e) => setNewScore(e.target.value)}
-                                fullWidth
-                            />
-
-                            <TextField
-                                label="Причина изменения"
-                                multiline
-                                minRows={3}
-                                size="small"
-                                value={reason}
-                                onChange={(e) => setReason(e.target.value)}
-                                fullWidth
-                            />
-
-                            {isUpdateError && (
-                                <Alert severity="error">
-                                    Не удалось сохранить изменения
-                                </Alert>
-                            )}
-
-                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                                <Button
-                                    size="small"
-                                    onClick={() => {
-                                        setEditOpen(false)
-                                        setNewScore('')
-                                        setReason('')
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flexGrow: 1 }}>
+                                <Box
+                                    sx={{
+                                        flexGrow: 1,
+                                        maxHeight: 300,
+                                        borderRadius: 2,
+                                        bgcolor: '#f5f5f5',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        overflowY: 'auto',
+                                        fontFamily: 'monospace',
+                                        fontSize: '0.875rem',
+                                        lineHeight: 1.7,
+                                        color: 'text.primary',
+                                        whiteSpace: 'pre-wrap',
+                                        wordBreak: 'break-word',
+                                        p: 1.5,
                                     }}
                                 >
-                                    Отмена
-                                </Button>
-
-                                <Button
-                                    size="small"
-                                    variant="contained"
-                                    onClick={handleEditSubmit}
-                                    disabled={isUpdating || !newScore || !reason}
-                                >
-                                    Сохранить
-                                </Button>
+                                    {applicant.editReason ?? '—'}
+                                </Box>
                             </Box>
                         </Box>
                     </Card>
+                ) : (
+                    // Если editReason нет, показываем форму редактирования, только если открыт editOpen и tab===0
+                    editOpen && tab === 0 && (
+                        <Card
+                            sx={{
+                                p: 2,
+                                borderRadius: 2,
+                                boxShadow: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%',
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 1.5,
+                                    p: 2,
+                                    borderRadius: 2,
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    bgcolor: '#fafafa',
+                                    width: '100%',
+                                }}
+                            >
+                                <Typography variant="body2" fontWeight={600}>
+                                    Изменение балла
+                                </Typography>
+
+                                <TextField
+                                    label="Новый балл"
+                                    type="number"
+                                    size="small"
+                                    value={newScore}
+                                    onChange={(e) => setNewScore(e.target.value)}
+                                    fullWidth
+                                />
+
+                                <TextField
+                                    label="Причина изменения"
+                                    multiline
+                                    minRows={3}
+                                    size="small"
+                                    value={reason}
+                                    onChange={(e) => setReason(e.target.value)}
+                                    fullWidth
+                                />
+
+                                {isUpdateError && (
+                                    <Alert severity="error">Не удалось сохранить изменения</Alert>
+                                )}
+
+                                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                                    <Button
+                                        size="small"
+                                        onClick={() => {
+                                            setEditOpen(false);
+                                            setNewScore('');
+                                            setReason('');
+                                        }}
+                                    >
+                                        Отмена
+                                    </Button>
+
+                                    <Button
+                                        size="small"
+                                        variant="contained"
+                                        onClick={handleEditSubmit}
+                                        disabled={isUpdating || !newScore || !reason}
+                                    >
+                                        Сохранить
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Card>
+                    )
                 )}
+
 
             </Box>
 
