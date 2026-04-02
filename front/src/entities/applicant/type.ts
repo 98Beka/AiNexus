@@ -8,6 +8,8 @@ export type ApplicantDto = {
     createdAt: string
     status: string
     score?: number
+    editScore?: number
+    editReason?:string
     testResultDetails?: string
     temporaryToken: string
     temporaryTokenExpiresAt: string
