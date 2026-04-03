@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AiNexus.Dtos.Applicants;
+using AutoMapper;
 using Library.Dtos.Accounts;
 using Library.Models;
 using Library.Models.Accounts;
@@ -25,5 +26,6 @@ public class AutoMapperProfile : Profile
         CreateMap<Applicant, Dtos.Applicants.ApplicantDto>();
 
         CreateMap<UpdateAccountRequest, Account>().ReverseMap();
+        CreateMap<Applicant, ApplicantMetaDto>();
     }
 }

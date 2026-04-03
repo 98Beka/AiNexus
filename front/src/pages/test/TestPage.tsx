@@ -12,6 +12,8 @@ import { useDispatch } from 'react-redux';
 import { setAccessToken, setSessionId } from '@/entities/session/model/slice';
 import { ChatWindow } from '@/features/chat/ui/ChatWindow';
 import { generateId } from '@/shared/utils/const';
+import { initChatStream } from '@/features/chat/model/chatThunks';
+import type { AppDispatch } from '@/app/store';
 
 const TIMER_DURATION = 10 * 60;
 
@@ -26,7 +28,7 @@ export default function TestPage() {
 
   const { token } = useParams<{ token: string }>();
   const { data: access_token, isLoading: isAuthLoading, isError } = useGetAccessTokenQuery(token as any, { skip: !token });
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   dispatch(setAccessToken(access_token));
   const sessionId = useRef<string>(generateId());
   dispatch(setSessionId(sessionId.current));
@@ -47,6 +49,7 @@ export default function TestPage() {
   }, [access_token]);
 
 const handleStart = async () => {
+  dispatch(initChatStream())
   setIsStarting(true);
   try {
     const success = await initializeTest(access_token, sessionId.current);

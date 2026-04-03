@@ -1,4 +1,5 @@
-﻿using AiNexus.Enums;
+﻿using AiNexus.Dtos.Applicants;
+using AiNexus.Enums;
 using AiNexus.Infrastructure.ChatHistory;
 using AiNexus.Infrastructure.Flowise;
 using AiNexus.Models.ChatHistory;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace AiNexus.Controllers;
@@ -29,13 +31,56 @@ public class ChatsController(
     [AllowAnonymous]
     [HttpGet("access_token/{testToken}")]
     public async Task<IActionResult> GetAccessToken(string testToken) {
-        var aplicant = await _context.Applicants.Where(a => a.TemporaryToken == testToken).FirstOrDefaultAsync();
-        if (aplicant == null)
+        var applicant = await _context.Applicants.Where(a => a.TemporaryToken == testToken).FirstOrDefaultAsync();
+        if (applicant == null)
             return NotFound();
-        if (aplicant.TemporaryTokenExpiresAt < DateTime.UtcNow)
+        if (applicant.TemporaryTokenExpiresAt < DateTime.UtcNow)
             return BadRequest("Test token has expired.");
-        var accessToken = _jwtUtils.GenerateTestAccessJwt(aplicant);
+        var accessToken = _jwtUtils.GenerateTestAccessJwt(applicant);
         return Ok(accessToken);
+    }
+
+    [Authorize]
+    [HttpPost("init_chat_stream")]
+    public async Task InitChatStream([FromBody] InitChatMessage message, CancellationToken cancellationToken) {
+        SetupSseResponse();
+
+        var aiResponseBuilder = new StringBuilder();
+        var applicantId = User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+        if (applicantId == null) {
+            await Response.WriteAsync($"applicant not found");
+            await Response.Body.FlushAsync();
+        }
+
+        var applicant = await _context.Applicants.Where(s => s.Id == Guid.Parse(applicantId)).FirstOrDefaultAsync();
+        var applicantMetaDto = _mapper.Map<ApplicantMetaDto>(applicant);
+        var applicantMetaJson = JsonSerializer.Serialize(applicantMetaDto, new JsonSerializerOptions {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+        try {
+            var flowiseRequest = new FlowiseRequest {
+                Message = applicantMetaJson,
+                ChatId = message.SessionId,
+                CancellationToken = cancellationToken,
+                Agent = AgentNameEnum.chat_init_agent.ToString()
+            };
+
+            var stream = _flowiseService.StreamMessage(flowiseRequest);
+            await ProcessStreamAsync(stream, aiResponseBuilder, cancellationToken);
+
+        } catch (OperationCanceledException) {
+            _logger.LogInformation("Client disconnected during chat stream.");
+        } catch (Exception ex) {
+            _logger.LogError(ex, "Error during agent execution stream");
+            var errorData = JsonSerializer.Serialize(new { error = "An error occurred during chat generation." });
+            await Response.WriteAsync($"data: {errorData}\n\n");
+            await Response.Body.FlushAsync();
+        } finally {
+            if (aiResponseBuilder.Length > 0) {
+                var aiMsg = new HistoryChatMessage("assistant", aiResponseBuilder.ToString());
+                await _chatHistoryService.AddMessageAsync(message.SessionId, aiMsg);
+            }
+        }
     }
 
 

@@ -7,7 +7,6 @@ import {
   Avatar,
   Chip,
   Typography,
-  Button,
   Divider,
   Stack,
 } from '@mui/material'
