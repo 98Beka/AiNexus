@@ -143,40 +143,6 @@ export default function AccountPage() {
         </CardContent>
 
         <Divider sx={{ borderColor: 'grey.100' }} />
-
-        <CardContent sx={{ p: 2, px: 3 }}>
-          <Stack direction="row" gap={1}>
-            <Button
-              fullWidth
-              variant="outlined"
-              size="small"
-              sx={{
-                borderRadius: 2.5,
-                borderColor: 'grey.200',
-                color: 'text.primary',
-                fontWeight: 500,
-                textTransform: 'none',
-                '&:hover': { borderColor: 'grey.400', bgcolor: 'grey.50' },
-              }}
-            >
-              Редактировать профиль
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                borderRadius: 2.5,
-                borderColor: 'grey.200',
-                color: 'red.500',
-                fontWeight: 500,
-                textTransform: 'none',
-                '&:hover': { borderColor: 'grey.400', bgcolor: 'grey.50' },
-              }}
-            >
-              Выйти
-            </Button>
-          </Stack>
-        </CardContent>
       </Card>
     </Box>
   )

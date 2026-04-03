@@ -1,6 +1,6 @@
 import { CircularProgress } from '@mui/material';
 
-export type FinishReason = 'banned' | 'timeout' | 'manual';
+export type FinishReason = "taken" | 'banned' | 'timeout' | 'manual';
 
 interface FinishModalProps {
   reason: FinishReason;
@@ -61,6 +61,16 @@ const CONTENT: Record<FinishReason, {
     badgeColor: '#15803d',
     badgeText: 'Отправлено',
   },
+  taken: {
+  icon: <span>🔒</span>,
+  iconBg: '#fef3c7',
+  iconColor: '#d97706',
+  title: 'Тест уже пройден',
+  subtitle: 'Вы уже проходили это интервью. Повторное прохождение недоступно.',
+  badgeBg: '#fef3c7',
+  badgeColor: '#d97706',
+  badgeText: 'Недоступно',
+},
 };
 
 export function FinishModal({ reason, isSubmitting = false }: FinishModalProps) {
@@ -84,20 +94,27 @@ export function FinishModal({ reason, isSubmitting = false }: FinishModalProps) 
         <div style={mo.divider} />
 
         <div style={mo.statusRow}>
-          {isSubmitting ? (
-            <>
-              <CircularProgress size={14} sx={{ color: '#6b7280' }} />
-              <span style={mo.statusText}>Отправляем результаты...</span>
-            </>
-          ) : (
-            <>
-              <div style={{ ...mo.dot, background: reason === 'banned' ? '#ef4444' : '#22c55e' }} />
-              <span style={mo.statusText}>
-                {reason === 'banned' ? 'Тест аннулирован' : 'Результаты отправлены'}
-              </span>
-            </>
-          )}
-        </div>
+  {isSubmitting ? (
+    <>
+      <CircularProgress size={14} sx={{ color: '#6b7280' }} />
+      <span style={mo.statusText}>Отправляем результаты...</span>
+    </>
+  ) : (
+    <>
+      <div style={{
+        ...mo.dot,
+        background: reason === 'banned' ? '#ef4444'
+          : reason === 'taken' ? '#d97706'
+          : '#22c55e'
+      }} />
+      <span style={mo.statusText}>
+        {reason === 'banned' ? 'Тест аннулирован'
+          : reason === 'taken' ? 'Повторное прохождение недоступно'
+          : 'Результаты отправлены'}
+      </span>
+    </>
+  )}
+</div>
 
         {reason === 'banned' && (
           <p style={mo.note}>

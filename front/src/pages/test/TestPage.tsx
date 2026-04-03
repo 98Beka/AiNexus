@@ -13,7 +13,7 @@ import { setAccessToken, setSessionId } from '@/entities/session/model/slice';
 import { ChatWindow } from '@/features/chat/ui/ChatWindow';
 import { generateId } from '@/shared/utils/const';
 
-const TIMER_DURATION = 0.5 * 60;
+const TIMER_DURATION = 10 * 60;
 
 export default function TestPage() {
   const [showIntro, setShowIntro] = useState(true);
@@ -46,14 +46,20 @@ export default function TestPage() {
     }
   }, [access_token]);
 
-  const handleStart = async () => {
-    setIsStarting(true);
-    try {
-      await initializeTest(access_token, sessionId.current);
+const handleStart = async () => {
+  setIsStarting(true);
+  try {
+    const success = await initializeTest(access_token, sessionId.current);
+    if (!success) {
+  setFinishReason('taken');
+  setShowFinishModal(true);
+  setShowIntro(false);
+} else {
       setShowIntro(false);
-    } catch { }
-    setIsStarting(false);
-  };
+    }
+  } catch { }
+  setIsStarting(false);
+};
 
   if (isAuthLoading) return <div style={s.centered}><CircularProgress sx={{ color: '#111827' }} /></div>;
   if (isError || !access_token) return <div style={s.centered}><p style={{ color: '#ef4444' }}>Ошибка авторизации.</p></div>;

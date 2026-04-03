@@ -65,7 +65,7 @@ export function IntroModal({ onStart, isStarting }: IntroModalProps) {
   useEffect(() => {
     let stream: MediaStream | null = null;
 
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator?.mediaDevices?.getUserMedia({ video: true })
       .then(s => {
         stream = s;
         if (videoRef.current) {
@@ -143,7 +143,6 @@ export function IntroModal({ onStart, isStarting }: IntroModalProps) {
         <button
           style={{ ...styles.btn, opacity: (!camOk || isStarting) ? 0.45 : 1 }}
           onClick={onStart}
-
         >
           {isStarting ? 'Запуск...' : 'Начать тест →'}
         </button>
