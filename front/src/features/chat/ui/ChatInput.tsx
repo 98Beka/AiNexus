@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Box, TextField, IconButton, CircularProgress } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
@@ -17,16 +17,25 @@ export const ChatInput = () => {
         setSessionStarted(true);
       } catch (error) {
         console.error('Failed to start session:', error);
-        return; 
+        return;
       }
     }
-      
-    dispatch(sendMessageStream({message: text}));
+    dispatch(sendMessageStream({ message: text }));
     setText('');
   };
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!isStreaming) {
+      inputRef.current?.focus();
+    }
+  }, [isStreaming]);
+  
   return (
     <Box sx={{ display: 'flex', gap: 1 }}>
       <TextField
+        inputRef={inputRef}
         fullWidth
         placeholder="Введите сообщение..."
         value={text}

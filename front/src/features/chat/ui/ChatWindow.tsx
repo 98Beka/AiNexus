@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Box, Typography, Avatar, useTheme, useMediaQuery } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import { Box, Typography, Avatar, useTheme, useMediaQuery, Dialog } from '@mui/material';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonIcon from '@mui/icons-material/Person';
 import { ChatInput } from '@/features/chat/ui/ChatInput';
@@ -7,21 +7,33 @@ import { useAppSelector } from '@/app/hooks';
 
 type Props = {
   preview: string
+  userPhoto: string
 }
 
-export const ChatWindow = ({ preview }: Props) => {
+export const ChatWindow = ({ preview, userPhoto }: Props) => {
   const { messages, error } = useAppSelector((state) => state.chat);
   const bottomRef = useRef<HTMLDivElement>(null);
-
+  const [open, setOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  const [photo, setPhoto] = useState<string>()
 
   const sidebarHeight = 48;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, messages[messages.length - 1]?.content]);
+
+  const handleOpenPhoto = (isUser: boolean) => {
+    const photo = getPhoto(isUser, userPhoto)
+    setPhoto(photo);
+    setOpen(true);
+  };
+
+  const getPhoto = (isUser: boolean, img: string) => {
+    return isUser ? `data:image/png;base64,${img}` : '/chat_bot_girl.png'
+  }
 
   return (
     <Box
@@ -37,6 +49,12 @@ export const ChatWindow = ({ preview }: Props) => {
         pb: 2, // Отступ снизу для красоты
       }}
     >
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md">
+        <img
+          src={photo}
+          style={{ width: '200px', height: '200px' }}
+        />
+      </Dialog>
       <Box
         sx={{
           flex: 1,
@@ -84,12 +102,10 @@ export const ChatWindow = ({ preview }: Props) => {
               }}
             >
               <Avatar
-                src={
-                  isUser
-                    ? `data:image/png;base64,${preview}`
-                    : '/chat_bot_girl.png'
-                }
+                onClick={() =>handleOpenPhoto(isUser)}
+                src={getPhoto(isUser, preview)}
                 sx={{
+                  cursor: "pointer",
                   width: isMobile ? 32 : 38,
                   height: isMobile ? 32 : 38,
                   color: '#fff',

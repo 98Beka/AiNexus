@@ -23,6 +23,7 @@ export type ApplicantShortDto = {
     patronymic?: string
     email: string
     preview?: string
+    photo?: string
     status: string
     score?: number
 }
