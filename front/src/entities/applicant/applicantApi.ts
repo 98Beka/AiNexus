@@ -50,13 +50,6 @@ export const applicantApi = createApi({
         method: 'GET',
       }),
     }),
-    updateApplicantTest: builder.mutation<ApplicantDto, { id: string; body: TestResultRequest }>({
-      query: ({ id, body }: { id: string; body: TestResultRequest }) => ({
-        url: `applicants/${id}/test-result`,
-        method: 'PUT',
-        body,
-      }),
-    }),
     updateApplicantScore: builder.mutation<void, { applicantId: string; editScore: number; editReason: string }>({
       query: (body) => ({
         url: 'test/update-score',
@@ -72,7 +65,6 @@ export const {
   useGetApplicantsQuery,
   useGetApplicantQuery,
   useGetApplicantByTokenQuery,
-  useUpdateApplicantTestMutation,
   useGetHistoryQuery,
     useUpdateApplicantScoreMutation,
 } = applicantApi

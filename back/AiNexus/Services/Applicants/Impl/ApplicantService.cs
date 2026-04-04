@@ -142,22 +142,6 @@ public class ApplicantService : BaseService, IApplicantService
     }
 
 
-    public async Task<ApplicantDto> UpdateTestAsync(Guid id, TestResultRequest request)
-    {
-        var applicant = await _context.Applicants.FindAsync(id);
-        if (applicant == null)
-            throw new NotFoundException();
-
-        applicant.Score = request.Score;
-        applicant.TestResultDetails = request.TestResultDetails;
-        applicant.Status = "Tested";
-        applicant.UpdatedAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
-
-        var result = _mapper.Map<ApplicantDto>(applicant);
-        return result;
-    }
-
     private async Task SendUrlForApplicantAsync(Applicant applicant)
     {
         if (applicant == null)

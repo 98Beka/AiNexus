@@ -93,11 +93,4 @@ public class ApplicantsController : ControllerBase
     {
         return await _applicantService.GetApplicantByIdAsync(id);
     }
-
-    [Authorize]
-    [HttpPut("{id:guid}/test-result")]
-    public async Task<ActionResult<ApplicantDto>> UpdateTest(Guid id, [FromBody] TestResultRequest request)
-    {
-        return await _applicantService.UpdateTestAsync(id, request);
-    }
 }

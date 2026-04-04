@@ -10,9 +10,7 @@ public class Applicant
     public string? Phone { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
-    public string Status { get; set; } = "Submitted"; // Submitted/Tested/Completed
-    public int? Score { get; set; }
-    public string? TestResultDetails { get; set; }
+    public string Status { get; set; } = "Submitted";
     public string TemporaryToken { get; set; } = Guid.NewGuid().ToString("N");
     public DateTime TemporaryTokenExpiresAt { get; set; } = DateTime.UtcNow.AddDays(3);
     public string Preview { get; set; } = string.Empty;    

@@ -84,7 +84,10 @@ public class TestService:ITestService
 
     public async Task<UpdateTestScoreResponse> UpdateTestScoreAsync(UpdateTestScoreRequest request)
     {
-        var test = await _context.TestSessions.FirstOrDefaultAsync(t => t.ApplicantId == request.ApplicantId);
+        var test = await _context.TestSessions
+            .OrderByDescending(t => t.FinishedAt)
+            .FirstOrDefaultAsync(t => t.ApplicantId == request.ApplicantId);
+
         if (test == null)
             throw new NotFoundException($"Test not found for applicant - {request.ApplicantId}");
 
