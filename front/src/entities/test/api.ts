@@ -20,18 +20,12 @@ export async function initializeTest(access_token: string, sessionId: string) {
     return res.json();
 }
 
-export async function finishTest(access_token: string) {
-    const res = await fetch(`${BASE_URL}/api/v1/test/finish`, {
+export function finishTest(access_token: string) {
+    fetch(`${BASE_URL}/api/v1/test/finish`, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${access_token}`,
             Accept: "*/*",
         },
     });
-
-    if (!res.ok) {
-        throw new Error(`Finish Error: ${res.status}`);
-    }
-
-    return res;
 }

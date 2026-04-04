@@ -46,28 +46,22 @@ export default function TestPage() {
   const accessToken = useSelector((state: RootState) => state.session.accessToken);
   const sessionId = useSelector((state: RootState) => state.session.sessionId);
 
-const handleFinish = useCallback(async (reason: FinishReason) => {
-  if (isFinishedRef.current) return;
-  isFinishedRef.current = true;
-  setIsFinished(true);
-  setFinishReason(reason);
-  setShowFinishModal(true);
-
-  const needsSubmission = reason === 'manual' || reason === 'timeout' || reason === 'banned';
-
-  if (needsSubmission) {
+  const handleFinish = useCallback(async (reason: FinishReason) => {
+    if (isFinishedRef.current) return;
+    isFinishedRef.current = true;
+    setIsFinished(true);
+    setFinishReason(reason);
+    setShowFinishModal(true);
     setIsSubmitting(true);
     try {
-      await finishTest(accessToken ?? "");
-    } catch(error) {
-      console.error("Ошибка при отправке результатов:", error);
-      // Здесь можно добавить обработку ошибки для пользователя
-    } finally {
+      finishTest(accessToken ?? "");
+    } catch {
       setIsSubmitting(false);
     }
-  }
-  
-}, [accessToken])
+    finally {
+      setIsSubmitting(false);
+    }
+  }, [accessToken]);
 
   const handleStart = async () => {
     const me = await fetchMyInfo(accessToken)
