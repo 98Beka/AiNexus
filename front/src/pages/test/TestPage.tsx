@@ -1,19 +1,20 @@
-import { useState, useRef, useCallback } from 'react';
-import { CircularProgress } from '@mui/material';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { styles as s } from './styles';
-import { useGetAccessTokenQuery } from '@/entities/chat/api/chatApi';
 import { TestTimerPanel } from '@/features/test_timer';
 import { CameraPopup } from '@/features/camera';
 import { IntroModal } from './components/IntroModal/IntroModal';
 import { FinishModal, type FinishReason } from "@/features/modals/finish-modal"
-import { finishTest, initializeTest } from '@/features/test/api';
-import { useDispatch } from 'react-redux';
+import { finishTest, initializeTest } from '@/entities/test/api';
+import { useDispatch, useSelector } from 'react-redux';
 import { setAccessToken, setSessionId } from '@/entities/session/model/slice';
 import { ChatWindow } from '@/features/chat/ui/ChatWindow';
 import { generateId } from '@/shared/utils/const';
 import { initChatStream } from '@/features/chat/model/chatThunks';
-import type { AppDispatch } from '@/app/store';
+import type { AppDispatch, RootState } from '@/app/store';
+import type { ApplicantShortDto } from '@/entities/applicant/type';
+import { fetchMyInfo } from '@/entities/applicant/applicantApi';
+import { fetchChatAccessToken } from '@/entities/chat/api/chatApi';
 
 const TIMER_DURATION = 10 * 60;
 
@@ -25,47 +26,67 @@ export default function TestPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
   const isFinishedRef = useRef(false);
-
-  const { token } = useParams<{ token: string }>();
-  const { data: access_token, isLoading: isAuthLoading, isError } = useGetAccessTokenQuery(token as any, { skip: !token });
+  const [me, setMe] = useState<ApplicantShortDto>()
   const dispatch = useDispatch<AppDispatch>();
-  dispatch(setAccessToken(access_token));
-  const sessionId = useRef<string>(generateId());
-  dispatch(setSessionId(sessionId.current));
+  const { token } = useParams<{ token: string }>();
 
-  const handleFinish = useCallback(async (reason: FinishReason) => {
-    if (isFinishedRef.current) return;
-    isFinishedRef.current = true;
-    setIsFinished(true);
-    setFinishReason(reason);
-    setShowFinishModal(true);
+  useEffect(() => {
+    if (!token) return;
+    const load = async () => {
+      const accessToken = await fetchChatAccessToken(token);
+      dispatch(setAccessToken(accessToken));
+    };
+
+    const sessionId = generateId();
+    dispatch(setSessionId(sessionId));
+
+    load();
+  }, [token, dispatch]);
+
+  const accessToken = useSelector((state: RootState) => state.session.accessToken);
+  const sessionId = useSelector((state: RootState) => state.session.sessionId);
+
+const handleFinish = useCallback(async (reason: FinishReason) => {
+  if (isFinishedRef.current) return;
+  isFinishedRef.current = true;
+  setIsFinished(true);
+  setFinishReason(reason);
+  setShowFinishModal(true);
+
+  const needsSubmission = reason === 'manual' || reason === 'timeout' || reason === 'banned';
+
+  if (needsSubmission) {
     setIsSubmitting(true);
     try {
-      await finishTest(access_token);
-    } catch { /* silent */ }
-    finally {
+      await finishTest(accessToken ?? "");
+    } catch(error) {
+      console.error("Ошибка при отправке результатов:", error);
+      // Здесь можно добавить обработку ошибки для пользователя
+    } finally {
       setIsSubmitting(false);
     }
-  }, [access_token]);
+  }
+  
+}, [accessToken])
 
-const handleStart = async () => {
-  dispatch(initChatStream())
-  setIsStarting(true);
-  try {
-    const success = await initializeTest(access_token, sessionId.current);
-    if (!success) {
-  setFinishReason('taken');
-  setShowFinishModal(true);
-  setShowIntro(false);
-} else {
-      setShowIntro(false);
-    }
-  } catch { }
-  setIsStarting(false);
-};
-
-  if (isAuthLoading) return <div style={s.centered}><CircularProgress sx={{ color: '#111827' }} /></div>;
-  if (isError || !access_token) return <div style={s.centered}><p style={{ color: '#ef4444' }}>Ошибка авторизации.</p></div>;
+  const handleStart = async () => {
+    const me = await fetchMyInfo(accessToken)
+    setMe(me)
+    dispatch(setAccessToken(accessToken));
+    dispatch(initChatStream())
+    setIsStarting(true);
+    try {
+      const success = await initializeTest(accessToken, sessionId);
+      if (!success) {
+        setFinishReason('taken');
+        setShowFinishModal(true);
+        setShowIntro(false);
+      } else {
+        setShowIntro(false);
+      }
+    } catch { }
+    setIsStarting(false);
+  };
 
   return (
     <div style={s.root}>
@@ -103,7 +124,7 @@ const handleStart = async () => {
           />
         )}
 
-        <ChatWindow />
+        <ChatWindow preview={me?.preview ?? ""} />
       </div>
 
       {!showIntro && (

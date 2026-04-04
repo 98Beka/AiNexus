@@ -8,7 +8,7 @@ import {
 import { useState } from 'react'
 import { useGetApplicantsQuery} from '../../entities/applicant/applicantApi'
 import { Link } from 'react-router-dom'
-import type { ApplicantDto } from '@/entities/applicant/type'
+import type { ApplicantShortDto } from '@/entities/applicant/type'
 
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -142,7 +142,7 @@ export default function ApplicantsPage() {
         {applicants.length === 0 ? (
             <Box sx={{ py: 6, textAlign: 'center', color: '#94a3b8' }}>Нет записей</Box>
         ) : (
-            applicants.map((applicant: ApplicantDto) => (
+            applicants.map((applicant: ApplicantShortDto) => (
                 <Box
                     key={applicant.id}
                     sx={{
@@ -161,8 +161,8 @@ export default function ApplicantsPage() {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
                     <Avatar
                         src={
-                          applicant.photo
-                              ? `data:image/jpeg;base64,${applicant.photo}`
+                          applicant.preview
+                              ? `data:image/jpeg;base64,${applicant.preview}`
                               : undefined
                         }
                         sx={{ width: 40, height: 40, flexShrink: 0, border: '2px solid #e2e8f0' }}

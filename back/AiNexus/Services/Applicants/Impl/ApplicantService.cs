@@ -1,4 +1,5 @@
 ﻿using AiNexus.Dtos.Applicants;
+using AiNexus.Helpers;
 using AiNexus.Helpers.Paginations;
 using AiNexus.Helpers.QRCode;
 using AiNexus.Infrastructure.Email;
@@ -47,6 +48,8 @@ public class ApplicantService : BaseService, IApplicantService
         //    throw new BadRequestException("An applicant with this email already exists.");
         //}
 
+        var preview = ImageHelper.ToPreviewBase64(request.Photo);
+
         var applicant = new Applicant
         {
             Name = request.Name,
@@ -55,6 +58,7 @@ public class ApplicantService : BaseService, IApplicantService
             Email = request.Email,
             Phone = request.Phone,
             Photo =  request.Photo,
+            Preview = preview,
             Status = "Submitted",
             TemporaryToken = Guid.NewGuid().ToString("N"),
             TemporaryTokenExpiresAt = DateTime.UtcNow.AddHours(24),
@@ -80,7 +84,7 @@ public class ApplicantService : BaseService, IApplicantService
                 Patronymic = a.Patronymic,
                 Email = a.Email,
                 Status = a.Status,
-                Photo = a.Photo,
+                Preview = a.Preview,
                 Score = _context.TestSessions
                     .Where(ts => ts.ApplicantId == a.Id)
                     .OrderByDescending(ts => ts.FinishedAt)

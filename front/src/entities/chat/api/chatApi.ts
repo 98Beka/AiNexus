@@ -1,24 +1,16 @@
-import { createBaseQuery } from '@/entities/shared/api/baseApi';
-import { createApi} from '@reduxjs/toolkit/query/react';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const chatApi = createApi({
-  reducerPath: 'chatApi',
-  baseQuery: createBaseQuery({
-      baseUrl: `${import.meta.env.VITE_API_BASE_URL}`,
-    }),
-  endpoints: (builder) => ({
-    getAccessToken: builder.query<any, string>({
-      query: (testToken) => ({
-        url: `/api/Chats/access_token/${testToken}`
-      }),
-    }),
-    initializeTest: builder.mutation<void, { chatSessionId: any }>({
-      query: (body) => ({ url: '/api/v1/test/initialize', method: 'POST', body }),
-    }),
-    finishTest: builder.mutation<void, undefined>({
-      query: () => ({ url: '/api/v1/test/finish', method: 'POST' }),
-    }),
-  }),
-});
+export async function fetchChatAccessToken(test_token: string): Promise<string> {
+    const res = await fetch(`${BASE_URL}/api/Chats/access_token/${test_token}`, {
+        method: "GET",
+        headers: {
+            Accept: "text/plain",
+        },
+    });
 
-export const { useGetAccessTokenQuery} = chatApi;
+    if (!res.ok) {
+        throw new Error(`Chat API Error: ${res.status}`);
+    }
+
+    return res.text();
+}

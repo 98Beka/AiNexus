@@ -16,6 +16,17 @@ export type ApplicantDto = {
     photo?: string
 }
 
+export type ApplicantShortDto = {
+    id: string
+    name: string
+    surname: string
+    patronymic?: string
+    email: string
+    preview?: string
+    status: string
+    score?: number
+}
+
 export type CreateApplicantRequest = {
     name: string
     surname: string
@@ -36,7 +47,7 @@ export type GetApplicantsRequest = {
 }
 
 export type GetApplicantsResponse = {
-    items: ApplicantDto[]
+    items: ApplicantShortDto[]
     totalCount: number
     currentPage: number
     pageSize: number

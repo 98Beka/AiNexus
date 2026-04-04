@@ -6,13 +6,16 @@ import type {
   GetApplicantsRequest,
   TestResultRequest,
   HistoryChatMessage,
-  ApplicantDto
+  ApplicantDto,
+  ApplicantShortDto
 } from './type';
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const applicantApi = createApi({
   reducerPath: 'applicantApi',
   baseQuery: createBaseQuery({
-    baseUrl: `${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000'}/api/v1/`,
+    baseUrl: `${BASE_URL ?? 'http://localhost:5000'}/api/v1/`,
   }),
   endpoints: (builder) => ({
     createApplicant: builder.mutation<ApplicantDto, CreateApplicantRequest>({
@@ -73,3 +76,19 @@ export const {
   useGetHistoryQuery,
     useUpdateApplicantScoreMutation,
 } = applicantApi
+
+export async function fetchMyInfo(access_token: string): Promise<ApplicantShortDto> {
+    const res = await fetch(`${BASE_URL}/api/v1/applicants/me`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${access_token}`,
+            Accept: "text/plain"
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error(`Chat API Error: ${res.status}`);
+    }
+
+    return await res.json();
+}

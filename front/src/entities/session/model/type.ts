@@ -1,4 +1,4 @@
 export interface SessionState {
-  accessToken: string | null,
-  sessionId: string | null
+  accessToken: string,
+  sessionId: string
 }

@@ -7,6 +7,7 @@ public class ApplicantDto
     public string Surname { get; set; }
     public string? Patronymic { get; set; }
     public string Photo { get; set; }
+    public string Preview { get; set; }
     public string Email { get; set; }
     public string? Phone { get; set; }
     public DateTime CreatedAt { get; set; }

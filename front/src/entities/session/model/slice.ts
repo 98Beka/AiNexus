@@ -3,8 +3,8 @@ import { type SessionState } from "./type"
 
 
 const initialState: SessionState = {
-    accessToken: null,
-    sessionId: null
+    accessToken: "",
+    sessionId: ""
 }
 
 const sessionSclice = createSlice({
@@ -18,10 +18,10 @@ const sessionSclice = createSlice({
             state.sessionId = action.payload
         },
         clearSessionId: (state) => {
-            state.sessionId = null
+            state.sessionId = ""
         },
         clearAccessToken: (state) => {
-            state.accessToken = null
+            state.accessToken = ""
         }
     }
 })
