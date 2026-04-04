@@ -116,8 +116,8 @@ export default function TestPage() {
             onTimeUp={() => handleFinish('timeout')}
             onManualFinish={() => handleFinish('manual')}
           />
+          
         )}
-
         <ChatWindow preview={me?.preview ?? ""}  userPhoto={me?.photo ?? ""}/>
       </div>
 
