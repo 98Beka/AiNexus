@@ -61,7 +61,7 @@ export const TestTimerPanel: React.FC<TestTimerPanelProps> = ({
     }}>
      <div style={s.timerTop}>
 
-              <div style={s.timerTop}>
+      <div style={s.timerTop}>
         <div style={{
           position: 'relative',
           width: 150,

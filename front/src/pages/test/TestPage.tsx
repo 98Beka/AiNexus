@@ -108,16 +108,13 @@ export default function TestPage() {
       )}
 
       <div style={s.layout}>
-        {!showIntro && (
-          <TestTimerPanel
-            duration={TIMER_DURATION}
-            isActive={!isFinished}
-            isFinished={isFinished}
-            onTimeUp={() => handleFinish('timeout')}
-            onManualFinish={() => handleFinish('manual')}
-          />
-          
-        )}
+        <TestTimerPanel
+          duration={TIMER_DURATION}
+          isActive={!isFinished && !showIntro}
+          isFinished={isFinished}
+          onTimeUp={() => handleFinish('timeout')}
+          onManualFinish={() => handleFinish('manual')}
+        />
         <ChatWindow preview={me?.preview ?? ""}  userPhoto={me?.photo ?? ""}/>
       </div>
 
