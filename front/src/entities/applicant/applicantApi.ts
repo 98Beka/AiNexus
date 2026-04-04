@@ -4,7 +4,6 @@ import type {
   CreateApplicantRequest,
   GetApplicantsResponse,
   GetApplicantsRequest,
-  TestResultRequest,
   HistoryChatMessage,
   ApplicantDto,
   ApplicantShortDto
