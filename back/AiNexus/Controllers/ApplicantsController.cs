@@ -79,7 +79,7 @@ public class ApplicantsController : ControllerBase
         }
         var lastSessionId = await _context.TestSessions
             .Where(ts => ts.ApplicantId == user.Id)
-            .OrderByDescending(ts => ts.StartedAt)
+            .OrderByDescending(ts => ts.FinishedAt)
             .Select(ts => ts.ChatSessionId)
             .FirstOrDefaultAsync();
 
