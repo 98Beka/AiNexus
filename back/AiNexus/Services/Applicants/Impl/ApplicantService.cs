@@ -89,7 +89,7 @@ public class ApplicantService : BaseService, IApplicantService
                 Preview = a.Preview,
                 Score = _context.TestSessions
                     .Where(ts => ts.ApplicantId == a.Id)
-                    .OrderByDescending(ts => ts.FinishedAt)
+                    .OrderByDescending(ts => ts.StartedAt)
                     .Select(ts => ts.Score)
                     .FirstOrDefault()
             });
@@ -120,7 +120,7 @@ public class ApplicantService : BaseService, IApplicantService
         var response = _mapper.Map<ApplicantDto>(applicant);
 
         var testSession = await _context.TestSessions
-                                .OrderByDescending(ts => ts.FinishedAt)
+                                .OrderByDescending(ts => ts.StartedAt)
                                 .FirstOrDefaultAsync(ts => ts.ApplicantId == id);
 
         if (testSession != null)
