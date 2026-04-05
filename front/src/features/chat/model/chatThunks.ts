@@ -9,7 +9,6 @@ import {
     addUserMessage
 } from '@/entities/chat/model/slice';
 import type { InitMessageSendRequest, MessageSendRequest } from '../api/type';
-import { useSelector } from 'react-redux';
 
 
 export const initChatStream = createAsyncThunk<
