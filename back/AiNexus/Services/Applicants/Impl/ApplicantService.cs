@@ -56,6 +56,7 @@ public class ApplicantService : BaseService, IApplicantService
             Surname = request.Surname,
             Patronymic = request.Patronymic,
             Email = request.Email,
+            StudyArea = request.StudyArea,
             Phone = request.Phone,
             Photo =  request.Photo,
             Preview = preview,
@@ -83,6 +84,7 @@ public class ApplicantService : BaseService, IApplicantService
                 Surname = a.Surname,
                 Patronymic = a.Patronymic,
                 Email = a.Email,
+                StudyArea = a.StudyArea,
                 Status = a.Status,
                 Preview = a.Preview,
                 Score = _context.TestSessions

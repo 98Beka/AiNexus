@@ -16,7 +16,7 @@ import type { ApplicantShortDto } from '@/entities/applicant/type';
 import { fetchMyInfo } from '@/entities/applicant/applicantApi';
 import { fetchChatAccessToken } from '@/entities/chat/api/chatApi';
 
-const TIMER_DURATION = 5 * 60;
+const TIMER_DURATION = 15 * 60;
 
 export default function TestPage() {
   const [showIntro, setShowIntro] = useState(true);

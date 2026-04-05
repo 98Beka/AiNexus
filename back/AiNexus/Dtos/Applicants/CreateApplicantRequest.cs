@@ -11,6 +11,7 @@ public class CreateApplicantRequest
     public string Surname { get; set; }
 
     public string? Patronymic { get; set; }
+    public string? StudyArea { get; set; }
 
     [Required]
     [EmailAddress(ErrorMessage = "Email должен быть корректным.")]

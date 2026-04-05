@@ -3,6 +3,7 @@ export type ApplicantDto = {
     name: string
     surname: string
     patronymic?: string
+        studyArea?: string
     email: string
     phone?: string
     createdAt: string
@@ -21,6 +22,7 @@ export type ApplicantShortDto = {
     name: string
     surname: string
     patronymic?: string
+    studyArea?: string
     email: string
     preview?: string
     photo?: string
@@ -32,6 +34,7 @@ export type CreateApplicantRequest = {
     name: string
     surname: string
     patronymic?: string
+    studyArea?: string
     email: string
     phone?: string
     photo?: string

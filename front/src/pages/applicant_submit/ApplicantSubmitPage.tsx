@@ -6,43 +6,56 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useCreateApplicantMutation } from '../../entities/applicant/applicantApi';
 import { useNavigate } from 'react-router-dom';
 
-function formatPhone(raw: string): string {
-  const digits = raw.replace(/\D/g, '').slice(0, 12);
-  if (!digits) return '';
-  const norm = digits.startsWith('0')
-    ? '996' + digits.slice(1)
-    : digits.startsWith('996')
-    ? digits
-    : '996' + digits;
-  const d = norm.slice(0, 12);
-  let out = '+996';
-  if (d.length > 3) out += ' ' + d.slice(3, 6);
-  if (d.length > 6) out += ' ' + d.slice(6, 9);
-  if (d.length > 9) out += ' ' + d.slice(9, 12);
-  return out;
-}
+const STUDY_AREAS = [
+  { value: 'Engineering', label: 'Наука — Креативная инженерия' },
+  { value: 'Tech', label: 'Технологии — Инновационные цифровые продукты и сервисы' },
+  { value: 'Society', label: 'Общество — Социология инноваций и лидерства' },
+  { value: 'Policy Reform', label: 'Законодательные реформы — Стратегии государственного управления' },
+  { value: 'Art + Media', label: 'Искусство + медиа — Цифровые медиа и маркетинг' }
+];
 
-function onPhoneChange(e: React.ChangeEvent<HTMLInputElement>, set: (v: string) => void) {
-  set(formatPhone(e.target.value));
-}
+const STUDY_AREA_INFO: Record<string, string> = {
+  'Engineering': 'Программа предназначена для тех, кто будет формировать будущее технологий. С первых дней обучения студенты решают реальные инженерные задачи, создают прототипы и цифровые продукты. Образовательный процесс объединяет технологии, дизайн и управление проектами, помогая участникам становиться лидерами, способными воплощать идеи в реальные решения.',
+  'Tech': 'Программа учит превращать идеи в цифровые продукты, которые действительно нужны людям. Студенты разрабатывают удобные интерфейсы, создают решения на основе данных и технологий, изучают UX/UI, управление продуктами и основы маркетинга. Обучение помогает соединить творчество и аналитику, чтобы создаваемые продукты делали жизнь проще и лучше.',
+  'Society': 'Программа подходит тем, кто стремится понять людей, их истории, традиции и способы взаимодействия в обществе. Студенты изучают, как формируются ценности, как сообщества адаптируются к изменениям и как культура влияет на восприятие мира. В ходе обучения они осваивают методы исследований и анализа данных, учатся понимать закономерности, объединяющие разные общества, и разрабатывать решения, способствующие социальной инклюзии и развитию сообществ.',
+  'Policy Reform': 'Программа рассчитана на студентов, которые хотят влиять на развитие городов и регионов и участвовать в создании справедливой и устойчивой политики. В процессе обучения они осваивают методы анализа данных, изучают устройство экономики и учатся разрабатывать стратегии, направленные на улучшение качества жизни. Полученные знания помогают работать с государственными структурами, некоммерческими организациями и сообществами, создавая реальные положительные изменения.',
+  'Art + Media': 'Программа готовит специалистов по коммуникациям с навыками в журналистике, медиапроизводстве, PR и маркетинге. Студенты учатся сторителлингу, писать и редактировать тексты, создавать видео и подкасты, понимают, как работают медиа. Выпускники смогут запускать собственные проекты и работать в самых разных сферах, от бизнеса до медиа. Отдельный фокус — критическое мышление, аналитика и эффективная коммуникация.'
+};
 
-function Field({ label, value, onChange, type = 'text', required = false, placeholder = '' }: {
+function Field({ label, value, onChange, type = 'text', required = false, placeholder = '', options }: {
   label: string; value: string; onChange: (v: string) => void;
   type?: string; required?: boolean; placeholder?: string;
+  options?: { value: string, label: string }[];
 }) {
   return (
     <div style={f.wrap}>
       <label style={f.label}>{label}{required && <span style={{ color: '#ef4444' }}> *</span>}</label>
-      <input
-        type={type} value={value} placeholder={placeholder} required={required}
-        onChange={(e) => onChange(e.target.value)}
-        style={f.input}
-        onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.12)'; }}
-        onBlur={(e) => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none'; }}
-      />
+      {type === 'select' && options ? (
+        <select
+          value={value} required={required}
+          onChange={(e) => onChange(e.target.value)}
+          style={{ ...f.input, cursor: 'pointer', appearance: 'auto' }}
+          onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.12)'; }}
+          onBlur={(e) => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none'; }}
+        >
+          <option value="" disabled>{placeholder}</option>
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type={type} value={value} placeholder={placeholder} required={required}
+          onChange={(e) => onChange(e.target.value)}
+          style={f.input}
+          onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.12)'; }}
+          onBlur={(e) => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none'; }}
+        />
+      )}
     </div>
   );
 }
+
 const f: Record<string, React.CSSProperties> = {
   wrap: { display: 'flex', flexDirection: 'column', gap: 5 },
   label: { fontSize: 11, fontWeight: 700, color: '#6b7280', letterSpacing: '0.06em', textTransform: 'uppercase' },
@@ -55,18 +68,18 @@ const f: Record<string, React.CSSProperties> = {
 };
 
 export default function ApplicantSubmitPage() {
-  const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', surname: '', patronymic: '', email: '' });
-  const [phone, setPhone]               = useState('');
-  const [photoPreview, setPhoto]        = useState<string | null>(null);
-  const [photoFile, setPhotoFile]       = useState<File | null>(null);
-  const [message, setMessage]           = useState<string | null>(null);
-  const [error, setError]               = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ name: '', surname: '', patronymic: '', studyArea: '', email: '' });
+  const [phone, setPhone] = useState('');
+  const [photoPreview, setPhoto] = useState<string | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [openCameraDialog, setOpenCameraDialog] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
-  const fileRef   = useRef<HTMLInputElement>(null);
-  const videoRef  = useRef<HTMLVideoElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -76,7 +89,7 @@ export default function ApplicantSubmitPage() {
 
   const processPhoto = (file: File) => {
     if (!file.type.startsWith('image/')) { setError('Выберите изображение'); return; }
-    if (file.size > 5 * 1024 * 1024)    { setError('Максимум 5 MB'); return; }
+    if (file.size > 5 * 1024 * 1024) { setError('Максимум 5 MB'); return; }
     setPhotoFile(file);
     setPhoto(URL.createObjectURL(file));
     setError(null);
@@ -142,22 +155,24 @@ export default function ApplicantSubmitPage() {
   const toBase64 = (file: File): Promise<string> => new Promise((res, rej) => {
     const r = new FileReader();
     r.readAsDataURL(file);
-    r.onload  = () => res((r.result as string).split(',')[1]);
+    r.onload = () => res((r.result as string).split(',')[1]);
     r.onerror = rej;
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    const selected = STUDY_AREAS.find(a => a.value === form.studyArea);
     try {
       await createApplicant({
         ...form,
         patronymic: form.patronymic || undefined,
+        studyArea: selected?.label || undefined,
         phone: phone || undefined,
         photo: photoFile ? await toBase64(photoFile) : undefined,
       }).unwrap();
       setMessage(`Заявка отправлена! Проверьте почту — ${form.email}`);
-      setForm({ name: '', surname: '', patronymic: '', email: '' });
+      setForm({ name: '', surname: '', patronymic: '', studyArea: '', email: '' });
       setPhone('');
       removePhoto();
     } catch {
@@ -170,13 +185,13 @@ export default function ApplicantSubmitPage() {
       <style>{`
         *{box-sizing:border-box;margin:0;padding:0}
         body{margin:0;font-family:'Inter',sans-serif}
-        input::placeholder{color:#9ca3af}
+        input::placeholder, select:invalid{color:#9ca3af}
         @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
       `}</style>
-      
-       <p onClick={() => navigate('/auth')} style={{ position: "fixed", top: 15, right: 20, color:"lightgray", cursor: 'pointer' }}>
-              войти как админ
-            </p>
+
+      <p onClick={() => navigate('/auth')} style={{ position: "fixed", top: 15, right: 20, color: "lightgray", cursor: 'pointer' }}>
+        войти как админ
+      </p>
 
       <div style={p.blob1} /><div style={p.blob2} />
 
@@ -205,31 +220,36 @@ export default function ApplicantSubmitPage() {
         </div>
 
         <div style={p.card}>
-          <h2 style={p.cardH}>Подать заявку</h2>
           <p style={p.cardSub}>Заполните форму — мы пришлём ссылку на email</p>
 
           {message && <div style={p.ok}><span>✓</span> {message}</div>}
-          {error   && <div style={p.err}><span>✕</span> {error}</div>}
+          {error && <div style={p.err}><span>✕</span> {error}</div>}
 
           <form onSubmit={handleSubmit} style={p.form}>
             <div style={p.row3}>
-              <Field label="Имя"     value={form.name}    onChange={set('name')}    required placeholder="Алексей" />
+              <Field label="Имя" value={form.name} onChange={set('name')} required placeholder="Алексей" />
               <Field label="Фамилия" value={form.surname} onChange={set('surname')} required placeholder="Иванов" />
             </div>
             <Field label="Отчество" value={form.patronymic} onChange={set('patronymic')} placeholder="Сергеевич" />
 
-            <Field label="Email" value={form.email} onChange={set('email')} type="email" required placeholder="you@example.com" />
-
-            <div style={f.wrap}>
-              <label style={f.label}>Телефон</label>
-              <input
-                type="tel" value={phone} placeholder="+996 700 000 000"
-                onChange={(e) => onPhoneChange(e, setPhone)}
-                style={f.input}
-                onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.12)'; }}
-                onBlur={(e)  => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none'; }}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <Field
+                label="Направление (Study Area)"
+                value={form.studyArea}
+                onChange={set('studyArea')}
+                type="select"
+                options={STUDY_AREAS}
+                required
+                placeholder="Выберите программу..."
               />
+              {form.studyArea && (
+                <div style={{ ...p.descBox, maxHeight: '100px', overflowY: 'auto' }}>
+                  {STUDY_AREA_INFO[form.studyArea]}
+                </div>
+              )}
             </div>
+
+            <Field label="Email" value={form.email} onChange={set('email')} type="email" required placeholder="you@example.com" />
 
             <div style={f.wrap}>
               <label style={f.label}>Фото профиля</label>
@@ -240,13 +260,6 @@ export default function ApplicantSubmitPage() {
 
               {!photoPreview ? (
                 <div style={p.drop} onClick={() => fileRef.current?.click()}>
-                  <div style={p.dropIcon}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round">
-                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                      <polyline points="17 8 12 3 7 8" />
-                      <line x1="12" y1="3" x2="12" y2="15" />
-                    </svg>
-                  </div>
                   <p style={p.dropTxt}>Загрузите фото или сделайте снимок</p>
                   <div style={p.dropBtns}>
                     <button type="button" style={p.dbtn} onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}>
@@ -316,7 +329,7 @@ const p: Record<string, React.CSSProperties> = {
   page: {
     minHeight: '100vh', background: '#080810',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    padding: '32px 16px', position: 'relative', overflow: 'hidden',
+    position: 'relative', overflow: 'hidden',
     fontFamily: "'Inter','Geist',sans-serif",
   },
   blob1: {
@@ -335,18 +348,18 @@ const p: Record<string, React.CSSProperties> = {
   },
 
   // left
-  left:    { display: 'flex', flexDirection: 'column', gap: 28 },
-  pill:    {
+  left: { display: 'flex', flexDirection: 'column', gap: 28 },
+  pill: {
     display: 'inline-flex', alignItems: 'center', width: 'fit-content',
     background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.3)',
     borderRadius: 999, padding: '5px 14px', fontSize: 12, fontWeight: 700,
     color: '#a5b4fc', letterSpacing: '0.04em',
   },
-  h1:      { fontSize: 'clamp(34px,5vw,54px)', fontWeight: 800, color: '#fff', lineHeight: 1.1, letterSpacing: '-0.03em' },
-  accent:  { background: 'linear-gradient(135deg,#6366f1,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' },
-  sub:     { fontSize: 15, color: '#9ca3af', lineHeight: 1.75, maxWidth: 400 },
-  steps:   { display: 'flex', flexDirection: 'column', gap: 12 },
-  step:    { display: 'flex', alignItems: 'center', gap: 14 },
+  h1: { fontSize: 'clamp(34px,5vw,54px)', fontWeight: 800, color: '#fff', lineHeight: 1.1, letterSpacing: '-0.03em' },
+  accent: { background: 'linear-gradient(135deg,#6366f1,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' },
+  sub: { fontSize: 15, color: '#9ca3af', lineHeight: 1.75, maxWidth: 400 },
+  steps: { display: 'flex', flexDirection: 'column', gap: 12 },
+  step: { display: 'flex', alignItems: 'center', gap: 14 },
   stepNum: {
     width: 36, height: 36, borderRadius: 10, flexShrink: 0,
     background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)',
@@ -354,34 +367,32 @@ const p: Record<string, React.CSSProperties> = {
     display: 'flex', alignItems: 'center', justifyContent: 'center', letterSpacing: '0.05em',
   },
   stepTxt: { fontSize: 14, color: '#d1d5db', fontWeight: 500 },
-  statsRow: { display: 'flex', gap: 28, marginTop: 8 },
-  stat:    { display: 'flex', flexDirection: 'column', gap: 2 },
-  statVal: { fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' },
-  statLbl: { fontSize: 11, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' },
 
   // card
-  card:    { background: '#fff', borderRadius: 20, padding: '36px 32px', boxShadow: '0 32px 80px rgba(0,0,0,0.5)', animation: 'fadeUp 0.4s ease' },
-  cardH:   { fontSize: 20, fontWeight: 800, color: '#111827', letterSpacing: '-0.02em' },
+  card: { background: '#fff', borderRadius: 20, padding: '36px 32px', boxShadow: '0 32px 80px rgba(0,0,0,0.5)', animation: 'fadeUp 0.4s ease' },
+  cardH: { fontSize: 20, fontWeight: 800, color: '#111827', letterSpacing: '-0.02em' },
   cardSub: { fontSize: 13, color: '#9ca3af', marginTop: 4, marginBottom: 22 },
-  form:    { display: 'flex', flexDirection: 'column', gap: 14 },
-  row3:    { display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10 },
+  form: { display: 'flex', flexDirection: 'column', gap: 14 },
+  row3: { display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10 },
 
-  ok:  { background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#15803d', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 500, marginBottom: 4 },
+  ok: { background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#15803d', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 500, marginBottom: 4 },
   err: { background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#b91c1c', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 500, marginBottom: 4 },
 
+  descBox: { background: '#f3f4f6', padding: '10px 12px', borderRadius: 8, fontSize: 11.5, color: '#4b5563', lineHeight: 1.5, fontStyle: 'italic', borderLeft: '3px solid #6366f1' },
+
   // dropzone
-  drop:     { border: '2px dashed #e5e7eb', borderRadius: 12, padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, background: '#f9fafb', cursor: 'pointer' },
+  drop: { border: '2px dashed #e5e7eb', borderRadius: 12, padding: '24px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, background: '#f9fafb', cursor: 'pointer' },
   dropIcon: { width: 44, height: 44, borderRadius: 10, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  dropTxt:  { fontSize: 13, color: '#9ca3af' },
+  dropTxt: { fontSize: 13, color: '#9ca3af' },
   dropBtns: { display: 'flex', gap: 8 },
-  dbtn:     { display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' },
+  dbtn: { display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: '1.5px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' },
   dbtnDark: { background: '#111827', borderColor: '#111827', color: '#fff' },
 
   // preview
-  preview:    { position: 'relative', height: 170, borderRadius: 12, overflow: 'hidden' },
+  preview: { position: 'relative', height: 170, borderRadius: 12, overflow: 'hidden' },
   previewImg: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
   previewBar: { position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent,rgba(0,0,0,0.65))', padding: '20px 12px 10px', display: 'flex', gap: 8, justifyContent: 'center' },
-  pBtn:       { padding: '5px 14px', borderRadius: 7, border: 'none', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' },
+  pBtn: { padding: '5px 14px', borderRadius: 7, border: 'none', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' },
 
   submit: { height: 48, borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: 'inherit', letterSpacing: '-0.01em', transition: 'opacity 0.15s' },
 };
