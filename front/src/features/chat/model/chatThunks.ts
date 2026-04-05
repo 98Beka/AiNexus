@@ -9,6 +9,7 @@ import {
     addUserMessage
 } from '@/entities/chat/model/slice';
 import type { InitMessageSendRequest, MessageSendRequest } from '../api/type';
+import { useSelector } from 'react-redux';
 
 
 export const initChatStream = createAsyncThunk<
@@ -18,7 +19,9 @@ export const initChatStream = createAsyncThunk<
 >(
   'chat/sendMessage',
   async (_, { dispatch, getState }) => {
-    
+    const chatState = getState().chat;
+    if (chatState.isStreaming) return;
+
     const accessToken = getState().session.accessToken;
     const sessionId = getState().session.sessionId;
     const msgRequest = { SessionId:sessionId } as InitMessageSendRequest;
@@ -52,7 +55,9 @@ export const sendMessageStream = createAsyncThunk<
 >(
   'chat/sendMessage',
   async ({ message }, { dispatch, getState }) => {
-    
+    const chatState = getState().chat;
+    if (chatState.isStreaming) return;
+
     const accessToken = getState().session.accessToken;
     const sessionId = getState().session.sessionId;
     const msgRequest = { SessionId:sessionId, content: message } as MessageSendRequest;

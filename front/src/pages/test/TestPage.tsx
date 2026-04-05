@@ -35,6 +35,9 @@ export default function TestPage() {
     const load = async () => {
       const accessToken = await fetchChatAccessToken(token);
       dispatch(setAccessToken(accessToken));
+      const me = await fetchMyInfo(accessToken)
+      setMe(me)
+      dispatch(initChatStream())
     };
 
     const sessionId = generateId();
@@ -64,10 +67,6 @@ export default function TestPage() {
   }, [accessToken]);
 
   const handleStart = async () => {
-    const me = await fetchMyInfo(accessToken)
-    setMe(me)
-    dispatch(setAccessToken(accessToken));
-    dispatch(initChatStream())
     setIsStarting(true);
     try {
       const success = await initializeTest(accessToken, sessionId);
