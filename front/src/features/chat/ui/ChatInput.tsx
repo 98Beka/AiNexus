@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box, TextField, IconButton, CircularProgress } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { sendMessage } from '../model/sendMessage';
+import { sendMessageStream } from '../model/chatThunks';
 
 export const ChatInput = () => {
   const [text, setText] = useState('');
@@ -21,7 +21,7 @@ export const ChatInput = () => {
       }
     }
       
-    dispatch(sendMessage({message: text}));
+    dispatch(sendMessageStream({message: text}));
     setText('');
   };
   return (

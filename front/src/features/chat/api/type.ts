@@ -10,6 +10,10 @@ export interface MessageSendRequest {
   Content?: string;
 }
 
+export interface InitMessageSendRequest {
+  SessionId?: string;
+}
+
 export interface TestStartRequest {
   TopicId: number;
   SessionId: string;
